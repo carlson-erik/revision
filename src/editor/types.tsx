@@ -6,6 +6,8 @@ type Alignment = 'left' | 'right'  | 'center'  | 'justify';
 
 type Element = 'paragraph';
 
+type TextFormat = 'bold' | 'italics' | 'underline' | 'strikethrough'
+
 type CustomText = {
   text: string;
   bold?: true;
@@ -38,4 +40,5 @@ export type {
   CustomElement,
   CustomText,
   Element,
+  TextFormat
 }
