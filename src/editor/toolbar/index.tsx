@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import { Editor, Range } from 'slate';
 import { useSlate, ReactEditor } from 'slate-react';
-import ReactDOM from 'react-dom'
+/* -------- Components -------- */
+import Button from './components/button';
+/* -------- Icon Components -------- */
+import Bold from './icons/bold';
+import Italic from './icons/italic';
+import Strikethrough from './icons/strikethrough';
+import Underline from './icons/underline';
+import Unlink from './icons/unlink';
 
 interface PortalProps {
   children: any;
@@ -16,17 +24,20 @@ const Portal = (props: PortalProps) => {
 }
 
 const Menu = styled.div`
-  padding: 8px 7px 6px;
+  padding: 4px;
+  background-color: white;
+  border: 1px solid #D1D4D9;
   position: absolute;
   z-index: 5;
   top: -10000px;
   left: -10000px;
   margin-top: -6px;
   opacity: 0;
-  background-color: #222;
-  border-radius: 4px;
+  border-radius: 2px;
   transition: opacity 0.75s;
   color: white;
+  display: flex;
+  align-items: center;
 `;
 
 const HoveringToolbar = () => {
@@ -68,7 +79,18 @@ const HoveringToolbar = () => {
   return (
     <Portal>
       <Menu ref={setRef}>
-        hovering toolbar
+        <Button onClick={() => console.log('bold button')} active={false}>
+          <Bold color='black' />
+        </Button>
+        <Button onClick={() => console.log('italic button')} active={false}>
+          <Italic color='black' />
+        </Button>
+        <Button onClick={() => console.log('underline button')} active={false}>
+          <Underline color='black' />
+        </Button>
+        <Button onClick={() => console.log('strikethrough button')} active={false}>
+          <Strikethrough color='black' />
+        </Button>
       </Menu>
     </Portal>
   )
