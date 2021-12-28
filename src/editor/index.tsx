@@ -8,11 +8,13 @@ import { CustomEditor, CustomElement } from './types';
 /* -------- Editor Components -------- */
 import TextLeaf from './elements/text-leaf';
 import DefaultElement from './elements/';
+import HoveringToolbar from './toolbar';
 /* -------- Reset Styles -------- */
 import './reset.css';
 
 const Container = styled.div`
   padding: 1rem;
+  margin: 2rem;
   border: 1px solid gray;
 `;
 
@@ -48,6 +50,7 @@ const Editor = (props: EditorProps) => {
         value={editorContent}
         onChange={ (value) => setEditorContent(value as CustomElement[])}
       >
+        <HoveringToolbar />
         <Editable
           readOnly={readOnly}
           renderLeaf={renderLeaf}
