@@ -1,7 +1,7 @@
-import { Editor, Transforms, Text, Selection } from 'slate';
+import { Editor, Transforms, Node, Text, Selection } from 'slate';
 import { CustomEditor, TextFormat } from '../types';
 
-const isFormatActive = (editor: CustomEditor, format: TextFormat) => {
+const isTextFormatActive = (editor: CustomEditor, format: TextFormat) => {
   const [match] = Editor.nodes(editor, {
     match: n => Text.isText(n) && n[format] === true,
     mode: 'all',
@@ -10,7 +10,7 @@ const isFormatActive = (editor: CustomEditor, format: TextFormat) => {
 };
 
 const toggleTextFormat = (editor: CustomEditor, format: TextFormat) => {
-  const isActive = isFormatActive(editor, format)
+  const isActive = isTextFormatActive(editor, format)
   Transforms.setNodes(
     editor,
     { [format]: isActive ? null : true },
@@ -18,8 +18,7 @@ const toggleTextFormat = (editor: CustomEditor, format: TextFormat) => {
   )
 };
 
-const setTextColor = (editor: CustomEditor, color: string, selection: Selection | null = null) => {
-  editor.selection = selection;
+const setTextColor = (editor: CustomEditor, color: string) => {
   Transforms.setNodes(
     editor,
     { 'textcolor': color },
@@ -27,33 +26,24 @@ const setTextColor = (editor: CustomEditor, color: string, selection: Selection 
   )
 };
 
-const getActiveTextColor = (editor: CustomEditor, selection: Selection | null = null) => {
-  const { children } = editor;
-  // passed selection isn't null, so get and return that block
-  if (selection && selection.anchor) {
-    const path = selection.anchor.path;
-    const textnode = children[path[0]].children[path[1]];
-    if ('textcolor' in textnode)
-      return textnode.textcolor;
-    else
-      return 'black';
+const getActiveTextColor = (editor: CustomEditor): string | null => {
+  const path = editor.selection?.anchor.path;
+  if(path){
+    const currentLeaf = Node.leaf( editor, path );
+    console.log('currentLeaf:', currentLeaf);
+  } else {
+    console.log('no path:', editor.selection);
   }
-
-  // passed selection is null but editor.selection isn't, get and return that block
-  if (selection === null && editor.selection && editor.selection.anchor) {
-    const path = editor.selection.anchor.path;
-    const textnode = children[path[0]].children[path[1]]
-    if ('textcolor' in textnode)
-      return textnode.textcolor;
-    else
-      return 'black';
-  }
+  // if ('textcolor' in textnode)
+  //   return textnode.textcolor;
+  // else
+  //   return 'black';
   // no valid selection, so there is no type to return
   return null;
 };
 
 export {
-  isFormatActive,
+  isTextFormatActive,
   toggleTextFormat,
   setTextColor,
   getActiveTextColor,

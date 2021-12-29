@@ -1,4 +1,4 @@
-import { ReactNode, Ref } from 'react';
+import { MouseEventHandler, ReactNode, Ref } from 'react';
 import styled from 'styled-components';
 
 const StyledButton = styled.button<{ active?: boolean}>`
@@ -21,14 +21,15 @@ const StyledButton = styled.button<{ active?: boolean}>`
 interface ToolbarButtonProps {
   children: ReactNode;
   active?: boolean;
-  onClick: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  onMouseDown?: MouseEventHandler<HTMLButtonElement>;
   reference?: Ref<HTMLButtonElement>;
 }
 
 const Button = (props: ToolbarButtonProps) => {
-  const { children, active, onClick, reference } = props;
+  const { children, active, onClick, onMouseDown, reference } = props;
   return (
-    <StyledButton onClick={onClick} active={active} ref={reference} >
+    <StyledButton onClick={onClick} onMouseDown={onMouseDown} active={active} ref={reference} >
       {children}
     </StyledButton>
   );

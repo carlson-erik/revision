@@ -1,4 +1,4 @@
-import { BaseEditor } from 'slate';
+import { BaseEditor, BaseSelection } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 
@@ -6,7 +6,7 @@ type Alignment = 'left' | 'right'  | 'center'  | 'justify';
 
 type Element = 'paragraph';
 
-type TextFormat = 'bold' | 'italics' | 'underline' | 'strikethrough'
+type TextFormat = 'bold' | 'italics' | 'underline' | 'strikethrough' | 'textcolor'
 
 type CustomText = {
   text: string;
@@ -25,7 +25,11 @@ type ParagraphElement = {
 
 type CustomElement = ParagraphElement;
 
-type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
+interface BlurEditor extends BaseEditor { 
+  blurSelection: BaseSelection |  null;
+}
+
+type CustomEditor = BaseEditor & ReactEditor & HistoryEditor & BlurEditor;
 
 declare module 'slate' {
   interface CustomTypes {

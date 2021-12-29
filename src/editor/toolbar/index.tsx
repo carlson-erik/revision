@@ -5,12 +5,13 @@ import { Editor, Range } from 'slate';
 import { useSlate, ReactEditor } from 'slate-react';
 /* -------- Components -------- */
 import Button from './components/button';
+/* -------- Actions -------- */
+import { toggleTextFormat, isTextFormatActive } from './actions';
 /* -------- Icon Components -------- */
 import Bold from './icons/bold';
 import Italic from './icons/italic';
 import Strikethrough from './icons/strikethrough';
 import Underline from './icons/underline';
-import Unlink from './icons/unlink';
 
 interface PortalProps {
   children: any;
@@ -35,36 +36,38 @@ const Menu = styled.div`
   opacity: 0;
   border-radius: 2px;
   transition: opacity 0.75s;
-  color: white;
+  color: red;
   display: flex;
   align-items: center;
 `;
 
 const HoveringToolbar = () => {
   const [ref, setRef] = useState<HTMLDivElement | null>();
+  const [editType, setEditType] = useState<'text' | 'block' | 'hidden'>('hidden');
   const editor = useSlate();
 
   useEffect(() => {
     const el = ref;
-    const { selection } = editor;
+    const { selection } = editor
 
     if (!el) {
-      return
+      setEditType('hidden');
+      return;
     }
 
-    if (
-      !selection ||
-      !ReactEditor.isFocused(editor) ||
-      Range.isCollapsed(selection) ||
-      Editor.string(editor, selection) === ''
-    ) {
-      el.removeAttribute('style')
-      return
+    if (!selection || !ReactEditor.isFocused(editor)) {
+      setEditType('hidden');
+      return;
+    }
+
+    if (Range.isCollapsed(selection) && editType !== 'block') {
+      setEditType('block');
+    } else if (!Range.isCollapsed(selection) && editType !== 'text') {
+      setEditType('text');
     }
 
     const domSelection = window.getSelection();
-    
-    if(domSelection) {
+    if (domSelection) {
       const domRange = domSelection.getRangeAt(0);
       const rect = domRange.getBoundingClientRect()
       el.style.opacity = '1'
@@ -76,21 +79,56 @@ const HoveringToolbar = () => {
     }
   })
 
+  if(editType === 'hidden') {
+    ref?.removeAttribute('style');
+  }
+
   return (
     <Portal>
       <Menu ref={setRef}>
-        <Button onClick={() => console.log('bold button')} active={false}>
-          <Bold color='black' />
-        </Button>
-        <Button onClick={() => console.log('italic button')} active={false}>
-          <Italic color='black' />
-        </Button>
-        <Button onClick={() => console.log('underline button')} active={false}>
-          <Underline color='black' />
-        </Button>
-        <Button onClick={() => console.log('strikethrough button')} active={false}>
-          <Strikethrough color='black' />
-        </Button>
+        {editType === 'text'
+          ? (
+            <>
+              <Button
+                active={isTextFormatActive(editor, 'bold')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  toggleTextFormat(editor, 'bold')
+                }}
+              >
+                <Bold color='black' />
+              </Button>
+              <Button
+                active={isTextFormatActive(editor, 'italics')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  toggleTextFormat(editor, 'italics')
+                }}
+              >
+                <Italic color='black' />
+              </Button>
+              <Button
+                active={isTextFormatActive(editor, 'underline')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  toggleTextFormat(editor, 'underline')
+                }}
+              >
+                <Underline color='black' />
+              </Button>
+              <Button
+                active={isTextFormatActive(editor, 'strikethrough')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  toggleTextFormat(editor, 'strikethrough')
+                }}
+              >
+                <Strikethrough color='black' />
+              </Button>
+            </>
+          ): (
+            <div>add block mode</div>
+          )}
       </Menu>
     </Portal>
   )
