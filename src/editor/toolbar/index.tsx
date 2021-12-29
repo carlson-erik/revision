@@ -7,7 +7,12 @@ import { useSlate, ReactEditor } from 'slate-react';
 import Button from './components/button';
 import Dropdown, { Option } from './components/dropdown';
 /* -------- Actions -------- */
-import { toggleTextFormat, isTextFormatActive, getActiveTextColor, getActiveBlockType, setBlockType } from './actions';
+import { toggleTextFormat, 
+        isTextFormatActive, 
+        getActiveTextColor, 
+        setElementType, 
+        hasElementFormatValue, 
+        setElementFormat } from './actions';
 /* -------- Icon Components -------- */
 import Bold from './icons/bold';
 import Italic from './icons/italic';
@@ -17,6 +22,7 @@ import Color from './icons/color';
 import Paragraph from './icons/paragraph';
 import Header from './icons/header';
 import { ElementType } from '../types';
+import Align from './icons/align';
 
 interface PortalProps {
   children: any;
@@ -100,7 +106,7 @@ const Menu = styled.div`
 
 const HoveringToolbar = () => {
   const [ref, setRef] = useState<HTMLDivElement | null>();
-  const [editType, setEditType] = useState<'text' | 'block' | 'hidden'>('hidden');
+  const [editType, setEditType] = useState<'text' | 'element' | 'hidden'>('hidden');
   const editor = useSlate();
 
   useEffect(() => {
@@ -110,8 +116,8 @@ const HoveringToolbar = () => {
     if (!el || !selection || !ReactEditor.isFocused(editor)) {
       setEditType('hidden');
       return;
-    } else if (Range.isCollapsed(selection) && editType !== 'block') {
-      setEditType('block');
+    } else if (Range.isCollapsed(selection) && editType !== 'element') {
+      setEditType('element');
     } else if (!Range.isCollapsed(selection) && editType !== 'text') {
       setEditType('text');
     }
@@ -129,9 +135,7 @@ const HoveringToolbar = () => {
     }
   })
 
-  if (editType === 'hidden' && ref) {
-    ref.style.opacity = '0'
-  }
+  if (editType === 'hidden' && ref) ref.removeAttribute('style');
 
   return (
     <Portal>
@@ -189,11 +193,47 @@ const HoveringToolbar = () => {
             <>
               <Dropdown 
                 options={elementOptions}
-                placeholder='dropdown placeholder'
+                placeholder='Select element type'
                 onChange={(newOption) => {
-                  setBlockType(editor, newOption.value as ElementType)
+                  setElementType(editor, newOption.value as ElementType)
                 }}
               />
+              <Button
+                active={hasElementFormatValue(editor, 'align', 'left')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  setElementFormat(editor, 'align', 'left');
+                }}
+              >
+                <Align direction='left' color='black' />
+              </Button>
+              <Button
+                active={hasElementFormatValue(editor, 'align', 'center')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  setElementFormat(editor, 'align', 'center');
+                }}
+              >
+                <Align direction='center' color='black' />
+              </Button>
+              <Button
+                active={hasElementFormatValue(editor, 'align', 'right')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  setElementFormat(editor, 'align', 'right');
+                }}
+              >
+                <Align direction='right' color='black' />
+              </Button>
+              <Button
+                active={hasElementFormatValue(editor, 'align', 'justify')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  setElementFormat(editor, 'align', 'justify');
+                }}
+              >
+                <Align direction='justify' color='black' />
+              </Button>
             </>
           )}
       </Menu>

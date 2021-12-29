@@ -4,7 +4,7 @@ import { useSlate } from 'slate-react';
 /* -------- Components -------- */
 import Popper from './popper';
 /* -------- Editor Actions -------- */
-import { getActiveBlockType } from '../actions';
+import { getElementBlockType } from '../actions';
 /* -------- Types -------- */
 import { CustomEditor } from '../../types';
 /* -------- Icons -------- */
@@ -110,7 +110,7 @@ const OptionsList = (props:OptionsListProps) => {
 }
 
 const getCurrentOption = (editor:CustomEditor, options: Option[]) => {
-  const blockType = getActiveBlockType(editor);
+  const blockType = getElementBlockType(editor);
 
   // if we have a block type, get the needed display details (icon, label, etc)
   if(blockType !== null)

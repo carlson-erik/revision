@@ -1,19 +1,20 @@
 import { Editor, Element, Transforms, Node, Text, Selection } from 'slate';
-import { CustomEditor, TextFormat, ElementType } from '../types';
+import { Alignment, CustomEditor, ElementFormat, ElementType, TextFormat } from '../types';
 
-const isTextFormatActive = (editor: CustomEditor, format: TextFormat) => {
+/* ------------------------ Text Format Actions ------------------------ */
+const isTextFormatActive = (editor: CustomEditor, textFormat: TextFormat) => {
   const [match] = Editor.nodes(editor, {
-    match: n => Text.isText(n) && n[format] === true,
+    match: n => Text.isText(n) && n[textFormat] === true,
     mode: 'all',
   })
   return !!match
 };
 
-const toggleTextFormat = (editor: CustomEditor, format: TextFormat) => {
-  const isActive = isTextFormatActive(editor, format)
+const toggleTextFormat = (editor: CustomEditor, textFormat: TextFormat) => {
+  const isActive = isTextFormatActive(editor, textFormat)
   Transforms.setNodes(
     editor,
-    { [format]: isActive ? null : true },
+    { [textFormat]: isActive ? null : true },
     { match: Text.isText, split: true }
   )
 };
@@ -36,19 +37,20 @@ const getActiveTextColor = (editor: CustomEditor): string => {
   return 'PRIMARY';
 };
 
-const isBlockTypeActive = (editor:CustomEditor, blockType: ElementType) => {
+/* ------------------------ Element Type Actions ------------------------ */
+const isElementTypeActive = (editor:CustomEditor, elementType: ElementType): boolean => {
   const [match] = Editor.nodes(editor, {
-    match: node => Element.isElement(node) && node.type === blockType,
+    match: node => Element.isElement(node) && node.type === elementType,
   })
   return !!match
 };
 
-const setBlockType = (editor:CustomEditor, blockType: ElementType) => {
-  // update the block type
-  Transforms.setNodes(editor, { type: blockType }, { mode: 'highest' });
+const setElementType = (editor:CustomEditor, elementType: ElementType): void => {
+  // update the element type
+  Transforms.setNodes(editor, { type: elementType }, { mode: 'highest' });
 };
 
-const getActiveBlockType = (editor:CustomEditor): ElementType | null => {
+const getElementBlockType = (editor:CustomEditor): ElementType | null => {
   const path = editor.selection?.anchor.path;
   
   if(path) {
@@ -60,12 +62,38 @@ const getActiveBlockType = (editor:CustomEditor): ElementType | null => {
   return null;
 };
 
+/* ------------------------ Element Format Actions ------------------------ */
+const isElementFormatActive = (editor:CustomEditor, elementFormat: ElementFormat) => {
+  const [match] = Editor.nodes(editor, {
+    match: node => Element.isElement(node) && node[elementFormat] !== null,
+  })
+  return !!match
+};
+
+const hasElementFormatValue = (editor:CustomEditor, elementFormat:ElementFormat, value: Alignment) => {
+  const [match] = Editor.nodes(editor, {
+    match: node => Element.isElement(node) && node[elementFormat] !== null && node[elementFormat] === value,
+  })
+  return !!match
+}
+
+const setElementFormat = (editor:CustomEditor, elementFormat:ElementFormat, value: Alignment) => {
+  // update the element format
+  Transforms.setNodes(editor, { [elementFormat]: value }, { mode: 'highest' });
+}
+
 export {
+  // Text Format Actions
   isTextFormatActive,
   toggleTextFormat,
   setTextColor,
   getActiveTextColor,
-  isBlockTypeActive,
-  setBlockType,
-  getActiveBlockType
+  // Element Type Actions
+  isElementTypeActive,
+  setElementType,
+  getElementBlockType,
+  // Element Format Actions
+  isElementFormatActive,
+  hasElementFormatValue,
+  setElementFormat
 };

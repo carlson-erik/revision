@@ -8,6 +8,8 @@ type HeaderType = 'header-one' | 'header-two' | 'header-three' | 'header-four' |
 
 type ElementType = 'paragraph' | HeaderType;
 
+type ElementFormat = 'align';
+
 type TextFormat = 'bold' | 'italics' | 'underline' | 'strikethrough' | 'textcolor'
 
 type CustomText = {
@@ -48,9 +50,11 @@ declare module 'slate' {
 }
 
 export type {
+  Alignment,
   CustomEditor,
   CustomElement,
   CustomText,
   ElementType,
+  ElementFormat,
   TextFormat
 }
