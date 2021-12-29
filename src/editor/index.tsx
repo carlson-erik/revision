@@ -8,6 +8,7 @@ import { CustomEditor, CustomElement } from './types';
 /* -------- Editor Components -------- */
 import TextLeaf from './elements/text-leaf';
 import DefaultElement from './elements/';
+import HeaderElement from './elements/header';
 import HoveringToolbar from './toolbar';
 /* -------- Reset Styles -------- */
 import './reset.css';
@@ -22,12 +23,23 @@ const EMPTY_DOCUMENT: CustomElement[] = [
   {
     type: 'paragraph',
     align: 'left',
-    children: [{ text: 'empty' }],
+    children: [{ text: '' }],
   },
 ];
 
 const renderElement = (props: RenderElementProps) => {
-  return <DefaultElement {...props} />
+  const { element } = props;
+  switch (element.type) {
+    case 'header-one':
+    case 'header-two':
+    case 'header-three':
+    case 'header-four':
+    case 'header-five':
+    case 'header-six':
+      return <HeaderElement {...props} />;
+    default:
+      return <DefaultElement {...props} />
+  }
 };
 
 const renderLeaf = (props: RenderLeafProps) => {
@@ -36,7 +48,7 @@ const renderLeaf = (props: RenderLeafProps) => {
 
 export interface EditorProps {
   readOnly: boolean;
-  content?: CustomElement[]; 
+  content?: CustomElement[];
 }
 
 const Editor = (props: EditorProps) => {
@@ -48,7 +60,7 @@ const Editor = (props: EditorProps) => {
       <Slate
         editor={editor}
         value={editorContent}
-        onChange={ (value) => setEditorContent(value as CustomElement[])}
+        onChange={(value) => setEditorContent(value as CustomElement[])}
       >
         <HoveringToolbar />
         <Editable

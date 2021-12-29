@@ -4,7 +4,9 @@ import { HistoryEditor } from 'slate-history';
 
 type Alignment = 'left' | 'right'  | 'center'  | 'justify';
 
-type Element = 'paragraph';
+type HeaderType = 'header-one' | 'header-two' | 'header-three' | 'header-four' | 'header-five' | 'header-six'
+
+type ElementType = 'paragraph' | HeaderType;
 
 type TextFormat = 'bold' | 'italics' | 'underline' | 'strikethrough' | 'textcolor'
 
@@ -23,7 +25,13 @@ type ParagraphElement = {
   children: CustomText[];
 };
 
-type CustomElement = ParagraphElement;
+type HeaderElement = {
+  type: HeaderType;
+  align: Alignment;
+  children: CustomText[];
+};
+
+type CustomElement = ParagraphElement | HeaderElement;
 
 interface BlurEditor extends BaseEditor { 
   blurSelection: BaseSelection |  null;
@@ -43,6 +51,6 @@ export type {
   CustomEditor,
   CustomElement,
   CustomText,
-  Element,
+  ElementType,
   TextFormat
 }

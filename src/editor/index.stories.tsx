@@ -31,6 +31,91 @@ const LOREM_IPSUM: CustomElement[] = [
   },
 ];
 
+const GRIMM_HANSEL: CustomElement[] = [
+  {
+    type: "header-one",
+    children: [
+      {
+        text: "HANSEL AND GRETEL",
+        bold: true
+      }
+    ],
+    align: 'center'
+  },
+  {
+    type: "header-three",
+    children: [
+      {
+        text: "By The Brothers Grimm"
+      }
+    ],
+    align: 'center'
+  },
+  {
+    type: 'paragraph',
+    children: [
+      {
+        text: ""
+      }
+    ],
+    align: 'left'
+  },
+  {
+    type: 'paragraph',
+    children: [
+      {
+        text: "Hard by a great forest dwelt a poor wood-cutter with his wife and his two children. The boy was called Hansel and the girl Gretel. He had little to bite and to break, and once when great dearth fell on the land, he could no longer procure even daily bread. Now when he thought over this by night in his bed, and tossed about in his anxiety, he groaned and said to his wife: ‘What is to become of us? How are we to feed our poor children, when we no longer have anything even for ourselves?’ ‘I’ll tell you what, husband,’ answered the woman, ‘early tomorrow morning we will take the children out into the forest to where it is the thickest; there we will light a fire for them, and give each of them one more piece of bread, and then we will go to our work and leave them alone. They will not find the way home again, and we shall be rid of them.’ ‘No, wife,’ said the man, ‘I will not do that; how can I bear to leave my children alone in the forest?--the wild animals would soon come and tear them to pieces.’ ‘O, you fool!’ said she, ‘then we must all four die of hunger, you may as well plane the planks for our coffins,’ and she left him no peace until he consented. ‘But I feel very sorry for the poor children, all the same,’ said the man."
+      }
+    ],
+    align: 'left'
+  },
+  {
+    type: 'paragraph',
+    children: [
+      {
+        text: "The two children had also not been able to sleep for hunger, and had heard what their stepmother had said to their father. Gretel wept bitter tears, and said to Hansel: ‘Now all is over with us.’ ‘Be quiet, Gretel,’ said Hansel, ‘do not distress yourself, I will soon find a way to help us.’ And when the old folks had fallen asleep, he got up, put on his little coat, opened the door below, and crept outside. The moon shone brightly, and the white pebbles which lay in front of the house glittered like real silver pennies. Hansel stooped and stuffed the little pocket of his coat with as many as he could get in. Then he went back and said to Gretel: ‘Be comforted, dear little sister, and sleep in peace, God will not forsake us,’ and he lay down again in his bed. When day dawned, but before the sun had risen, the woman came and awoke the two children, saying: ‘Get up, you sluggards! we are going into the forest to fetch wood.’ She gave each a little piece of bread, and said: ‘There is something for your dinner, but do not eat it up before then, for you will get nothing else.’ Gretel took the bread under her apron, as Hansel had the pebbles in his pocket. Then they all set out together on the way to the forest. When they had walked a short time, Hansel stood still and peeped back at the house, and did so again and again. His father said: ‘Hansel, what are you looking at there and staying behind for? Pay attention, and do not forget how to use your legs.’ ‘Ah, father,’ said Hansel, ‘I am looking at my little white cat, which is sitting up on the roof, and wants to say goodbye to me.’ The wife said: ‘Fool, that is not your little cat, that is the morning sun which is shining on the chimneys.’ Hansel, however, had not been looking back at the cat, but had been constantly throwing one of the white pebble-stones out of his pocket on the road."
+      }
+    ],
+    align: 'left'
+  },
+  {
+    type: 'paragraph',
+    children: [
+      {
+        text: "When they had reached the middle of the forest, the father said: ‘Now,  children, pile up some wood, and I will light a fire that you may not  be cold.’ Hansel and Gretel gathered brushwood together, as high as a  little hill. The brushwood was lighted, and when the flames were burning  very high, the woman said: ‘Now, children, lay yourselves down by the  fire and rest, we will go into the forest and cut some wood. When we  have done, we will come back and fetch you away.’"
+      }
+    ],
+    align: 'left'
+  },
+  {
+    type: 'paragraph',
+    children: [
+      {
+        text: "Hansel and Gretel sat by the fire, and when noon came, each ate a little  piece of bread, and as they heard the strokes of the wood-axe they  believed that their father was near. It was not the axe, however, but  a branch which he had fastened to a withered tree which the wind was  blowing backwards and forwards. And as they had been sitting such a long  time, their eyes closed with fatigue, and they fell fast asleep. When  at last they awoke, it was already dark night. Gretel began to cry and  said: ‘How are we to get out of the forest now?’ But Hansel comforted  her and said: ‘Just wait a little, until the moon has risen, and then we  will soon find the way.’ And when the full moon had risen, Hansel took  his little sister by the hand, and followed the pebbles which shone like  newly-coined silver pieces, and showed them the way."
+      }
+    ],
+    align: 'left'
+  },
+  {
+    type: 'paragraph',
+    children: [
+      {
+        text: "They walked the whole night long, and by break of day came once more  to their father’s house. They knocked at the door, and when the woman  opened it and saw that it was Hansel and Gretel, she said: ‘You naughty  children, why have you slept so long in the forest?--we thought you were  never coming back at all!’ The father, however, rejoiced, for it had cut  him to the heart to leave them behind alone.  "
+      }
+    ],
+    align: 'left'
+  },
+  {
+    type: 'paragraph',
+    children: [
+      {
+        text: "Not long afterwards, there was once more great dearth throughout the  land, and the children heard their mother saying at night to their  father: ‘Everything is eaten again, we have one half loaf left, and that  is the end. The children must go, we will take them farther into the  wood, so that they will not find their way out again; there is no other  means of saving ourselves!’ The man’s heart was heavy, and he thought:  ‘It would be better for you to share the last mouthful with your  children.’ The woman, however, would listen to nothing that he had to  say, but scolded and reproached him. He who says A must say B, likewise,  and as he had yielded the first time, he had to do so a second time  also."
+      }
+    ],
+    align: 'left'
+  }
+];
+
 export default {
   title: 'Editor',
   component: Editor,
@@ -50,4 +135,9 @@ Empty.args = {};
 export const LoremIpsum = EditorTemplate.bind({});
 LoremIpsum.args = {
   content: LOREM_IPSUM
+};
+
+export const HanselAndGretel = EditorTemplate.bind({});
+HanselAndGretel.args = {
+  content: GRIMM_HANSEL
 };

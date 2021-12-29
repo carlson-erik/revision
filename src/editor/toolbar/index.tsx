@@ -5,13 +5,18 @@ import { Editor, Range } from 'slate';
 import { useSlate, ReactEditor } from 'slate-react';
 /* -------- Components -------- */
 import Button from './components/button';
+import Dropdown, { Option } from './components/dropdown';
 /* -------- Actions -------- */
-import { toggleTextFormat, isTextFormatActive } from './actions';
+import { toggleTextFormat, isTextFormatActive, getActiveTextColor, getActiveBlockType, setBlockType } from './actions';
 /* -------- Icon Components -------- */
 import Bold from './icons/bold';
 import Italic from './icons/italic';
 import Strikethrough from './icons/strikethrough';
 import Underline from './icons/underline';
+import Color from './icons/color';
+import Paragraph from './icons/paragraph';
+import Header from './icons/header';
+import { ElementType } from '../types';
 
 interface PortalProps {
   children: any;
@@ -24,6 +29,58 @@ const Portal = (props: PortalProps) => {
     : null
 }
 
+const elementOptions: Option[] = [ 
+  {
+    label: 'Paragraph',
+    value: 'paragraph',
+    icon: (
+      <Paragraph color='black'/>
+    )
+  },
+  {
+    label: 'Header 1',
+    value: 'header-one',
+    icon: (
+      <Header color='black' size={1} />
+    )
+  },
+  {
+    label: 'Header 2',
+    value: 'header-two',
+    icon: (
+      <Header color='black' size={2} />
+    )
+  },
+  {
+    label: 'Header 3',
+    value: 'header-three',
+    icon: (
+      <Header color='black' size={3} />
+    )
+  },
+  {
+    label: 'Header 4',
+    value: 'header-four',
+    icon: (
+      <Header color='black' size={4} />
+    )
+  },
+  {
+    label: 'Header 5',
+    value: 'header-five',
+    icon: (
+      <Header color='black' size={5} />
+    )
+  },
+  {
+    label: 'Header 6',
+    value: 'header-six',
+    icon: (
+      <Header color='black' size={6} />
+    )
+  },
+];
+
 const Menu = styled.div`
   padding: 4px;
   background-color: white;
@@ -35,7 +92,7 @@ const Menu = styled.div`
   margin-top: -6px;
   opacity: 0;
   border-radius: 2px;
-  transition: opacity 0.75s;
+  transition: opacity 0.25s;
   color: red;
   display: flex;
   align-items: center;
@@ -50,17 +107,10 @@ const HoveringToolbar = () => {
     const el = ref;
     const { selection } = editor
 
-    if (!el) {
+    if (!el || !selection || !ReactEditor.isFocused(editor)) {
       setEditType('hidden');
       return;
-    }
-
-    if (!selection || !ReactEditor.isFocused(editor)) {
-      setEditType('hidden');
-      return;
-    }
-
-    if (Range.isCollapsed(selection) && editType !== 'block') {
+    } else if (Range.isCollapsed(selection) && editType !== 'block') {
       setEditType('block');
     } else if (!Range.isCollapsed(selection) && editType !== 'text') {
       setEditType('text');
@@ -79,8 +129,8 @@ const HoveringToolbar = () => {
     }
   })
 
-  if(editType === 'hidden') {
-    ref?.removeAttribute('style');
+  if (editType === 'hidden' && ref) {
+    ref.style.opacity = '0'
   }
 
   return (
@@ -125,9 +175,26 @@ const HoveringToolbar = () => {
               >
                 <Strikethrough color='black' />
               </Button>
+              <Button
+                active={isTextFormatActive(editor, 'textcolor')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  console.log('active color: ', getActiveTextColor(editor));
+                }}
+              >
+                <Color color={getActiveTextColor(editor) == 'PRIMARY' ? 'black' : getActiveTextColor(editor)} />
+              </Button>
             </>
-          ): (
-            <div>add block mode</div>
+          ) : (
+            <>
+              <Dropdown 
+                options={elementOptions}
+                placeholder='dropdown placeholder'
+                onChange={(newOption) => {
+                  setBlockType(editor, newOption.value as ElementType)
+                }}
+              />
+            </>
           )}
       </Menu>
     </Portal>

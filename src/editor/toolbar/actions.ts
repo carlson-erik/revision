@@ -1,5 +1,5 @@
-import { Editor, Transforms, Node, Text, Selection } from 'slate';
-import { CustomEditor, TextFormat } from '../types';
+import { Editor, Element, Transforms, Node, Text, Selection } from 'slate';
+import { CustomEditor, TextFormat, ElementType } from '../types';
 
 const isTextFormatActive = (editor: CustomEditor, format: TextFormat) => {
   const [match] = Editor.nodes(editor, {
@@ -26,19 +26,37 @@ const setTextColor = (editor: CustomEditor, color: string) => {
   )
 };
 
-const getActiveTextColor = (editor: CustomEditor): string | null => {
+const getActiveTextColor = (editor: CustomEditor): string => {
   const path = editor.selection?.anchor.path;
   if(path){
-    const currentLeaf = Node.leaf( editor, path );
-    console.log('currentLeaf:', currentLeaf);
-  } else {
-    console.log('no path:', editor.selection);
+    const currLeaf = Node.leaf( editor, path );
+    if (currLeaf.textcolor)
+      return currLeaf.textcolor;
   }
-  // if ('textcolor' in textnode)
-  //   return textnode.textcolor;
-  // else
-  //   return 'black';
-  // no valid selection, so there is no type to return
+  return 'PRIMARY';
+};
+
+const isBlockTypeActive = (editor:CustomEditor, blockType: ElementType) => {
+  const [match] = Editor.nodes(editor, {
+    match: node => Element.isElement(node) && node.type === blockType,
+  })
+  return !!match
+};
+
+const setBlockType = (editor:CustomEditor, blockType: ElementType) => {
+  // update the block type
+  Transforms.setNodes(editor, { type: blockType }, { mode: 'highest' });
+};
+
+const getActiveBlockType = (editor:CustomEditor): ElementType | null => {
+  const path = editor.selection?.anchor.path;
+  
+  if(path) {
+    const element = editor.children[path[0]];
+    if(Element.isElement(element))
+      return element.type;
+  }
+
   return null;
 };
 
@@ -47,4 +65,7 @@ export {
   toggleTextFormat,
   setTextColor,
   getActiveTextColor,
+  isBlockTypeActive,
+  setBlockType,
+  getActiveBlockType
 };
