@@ -148,7 +148,6 @@ const Editor = (props: EditorProps) => {
             // update blurSelection with last selection before click out
             editor.blurSelection = editor.selection;
           }}
-          className='rt-editor'
         />
       </Slate>
     </Container>

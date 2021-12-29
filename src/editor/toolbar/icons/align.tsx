@@ -1,5 +1,5 @@
 
-import { ToolbarIcon } from '../styles';
+import { ToolbarIcon } from '../styled';
 import { IconProps } from '../types';
 
 interface AlignProps extends IconProps {
@@ -7,7 +7,7 @@ interface AlignProps extends IconProps {
 }
 
 export default function Align(props: AlignProps) {
-  const { color, direction } = props;
+  const { color, direction, size = 'large' } = props;
 
   let viewBox, svgContent;
 
@@ -37,7 +37,7 @@ export default function Align(props: AlignProps) {
       );
   }
   return (
-    <ToolbarIcon xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={color}>
+    <ToolbarIcon size={size} xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={color}>
       {svgContent}
     </ToolbarIcon>
   )

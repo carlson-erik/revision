@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
-import { Editor, Range } from 'slate';
+import { Range } from 'slate';
 import { useSlate, ReactEditor } from 'slate-react';
 /* -------- Components -------- */
 import Button from './components/button';
@@ -20,7 +20,7 @@ import Strikethrough from './icons/strikethrough';
 import Underline from './icons/underline';
 import Color from './icons/color';
 import Paragraph from './icons/paragraph';
-import Header from './icons/header';
+import Heading from './icons/heading';
 import { ElementType } from '../types';
 import Align from './icons/align';
 
@@ -40,49 +40,49 @@ const elementOptions: Option[] = [
     label: 'Paragraph',
     value: 'paragraph',
     icon: (
-      <Paragraph color='black'/>
+      <Paragraph color='#52555F' />
     )
   },
   {
-    label: 'Header 1',
+    label: 'Heading 1',
     value: 'header-one',
     icon: (
-      <Header color='black' size={1} />
+      <Heading color='#52555F' headingSize={1} />
     )
   },
   {
-    label: 'Header 2',
+    label: 'Heading 2',
     value: 'header-two',
     icon: (
-      <Header color='black' size={2} />
+      <Heading color='#52555F' headingSize={2} />
     )
   },
   {
-    label: 'Header 3',
+    label: 'Heading 3',
     value: 'header-three',
     icon: (
-      <Header color='black' size={3} />
+      <Heading color='#52555F' headingSize={3} />
     )
   },
   {
-    label: 'Header 4',
+    label: 'Heading 4',
     value: 'header-four',
     icon: (
-      <Header color='black' size={4} />
+      <Heading color='#52555F' headingSize={4} />
     )
   },
   {
-    label: 'Header 5',
+    label: 'Heading 5',
     value: 'header-five',
     icon: (
-      <Header color='black' size={5} />
+      <Heading color='#52555F' headingSize={5} />
     )
   },
   {
-    label: 'Header 6',
+    label: 'Heading 6',
     value: 'header-six',
     icon: (
-      <Header color='black' size={6} />
+      <Heading color='#52555F' headingSize={6} />
     )
   },
 ];

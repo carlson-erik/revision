@@ -14,56 +14,58 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-  width: 10rem;
+  width: 9rem;
+  border: 1px solid #E5E8EC;
+  margin-right: 4px;
 `;
 const SelectedValue = styled.div`
   height: 100%;
   flex-grow: 1;
   display: flex;
   align-items: center;
-  font-size: 0.75rem;
   padding-left: 0.5rem;
   color: #52555F;
-  font-weight: bold;
+  cursor: default;
+  font-size: 14px;
+
+  & svg {
+    padding-right: 0.5rem;
+  }
 `;
 
-const IconContainer = styled.div<{ disabled?: boolean; }>`
+const IconContainer = styled.div`
   height: 2rem;
   width: 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
   color: #52555F;
-
-  & > svg {
-    color: ${props => props.disabled ? '#EFF2F4' : '#52555F'};
-  }
-
-  & > svg.small { 
-    height: 1rem;
-    width: 1rem;
-  }
 `;
 
 const OLContainer = styled.ul`
   background-color: white;
   border: 1px solid #E5E8EC;
-  width: 10rem;
+  border-top: 0;
   margin-block: 0;
   padding: 0;
+  width: 9rem;
 `;
 
 const OptionListItem = styled.li<{ selected: boolean; }>`
-  font-size: 0.75rem;
   height: 2rem;
   padding-left: 0.5rem;
   display: flex;
   align-items: center;
   color: ${'#52555F'};
-  font-weight: bold;
+  cursor: default;
+  font-size: 14px;
 
   &:hover {
     background-color: #D1D4D9;
+  }
+
+  & svg {
+    padding-right: 0.5rem;
   }
 
   ${props => props.selected ? 'background-color: #D1D4D9;' : ''}
@@ -131,19 +133,15 @@ const Dropdown = (props: DropdownProps) => {
   const editor = useSlate();
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
   const selectedOption: Option |  null = getCurrentOption(editor, options);
   const placeholder_text: string = placeholder && placeholder !== '' ? placeholder : '';
-  const disabled: boolean = !editor.selection && !editor.blurSelection;
 
   return (
     <>
       <Container 
         onClick={() => {
-          if(!disabled) {
-            onOpen();
-          }
+          setIsOpen(!isOpen);
         }} 
         ref={setContainerRef}>
         <SelectedValue>
@@ -158,11 +156,11 @@ const Dropdown = (props: DropdownProps) => {
             </Fragment>
           ) : placeholder_text}
         </SelectedValue>
-        <IconContainer disabled={disabled}>
+        <IconContainer>
           { isOpen ? (
-            <Chevron color='black' direction='down'/>
+            <Chevron size='small' color='#52555F' direction='down'/>
           ): (
-            <Chevron color='black' direction='up'/>
+            <Chevron size='small' color='#52555F' direction='up'/>
           )}
         </IconContainer>
       </Container>

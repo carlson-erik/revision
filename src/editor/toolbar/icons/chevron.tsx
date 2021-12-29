@@ -1,5 +1,5 @@
 
-import { ToolbarIcon } from '../styles';
+import { ToolbarIcon } from '../styled';
 import { IconProps } from '../types';
 
 interface ChevronProps extends IconProps {
@@ -7,7 +7,7 @@ interface ChevronProps extends IconProps {
 }
 
 export default function Chevron(props: ChevronProps) {
-  const { color, direction } = props;
+  const { color, direction, size = 'large' } = props;
   let viewBox, svgContent;
 
   if( direction === 'up') {
@@ -23,7 +23,7 @@ export default function Chevron(props: ChevronProps) {
   }
 
   return (
-    <ToolbarIcon xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={color}>
+    <ToolbarIcon size={size} xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={color}>
       {svgContent}
     </ToolbarIcon>
   )

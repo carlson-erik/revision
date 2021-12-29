@@ -1,5 +1,5 @@
 
-import { ToolbarIcon } from '../styles';
+import { ToolbarIcon } from '../styled';
 import { IconProps } from '../types';
 
 interface ListProps extends IconProps {
@@ -7,7 +7,7 @@ interface ListProps extends IconProps {
 }
 
 export default function List(props: ListProps) {
-  const { color, ordered } = props;
+  const { color, ordered, size = 'large' } = props;
   let viewBox, svgContent;
 
   console.log('list ordered: ', ordered)
@@ -25,7 +25,7 @@ export default function List(props: ListProps) {
   }
 
   return (
-    <ToolbarIcon xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={color}>
+    <ToolbarIcon size={size} xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={color}>
       {svgContent}
     </ToolbarIcon>
   )

@@ -1,16 +1,16 @@
 
-import { ToolbarIcon } from '../styles';
+import { ToolbarIcon } from '../styled';
 import { IconProps } from '../types';
 
-interface HeaderProps extends IconProps {
-  size?: 1 | 2 | 3 | 4 | 5 | 6;
+interface HeadingProps extends IconProps {
+  headingSize?: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
-export default function Header(props: HeaderProps) {
-  const { color, size } = props;
+export default function Heading(props: HeadingProps) {
+  const { color, headingSize, size = 'large'} = props;
   let viewBox, svgContent;
 
-  switch (size) {
+  switch (headingSize) {
     case 1:
       viewBox = '-5 -7 24 24';
       svgContent = (
@@ -55,7 +55,7 @@ export default function Header(props: HeaderProps) {
   }
 
   return (
-    <ToolbarIcon xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={color}>
+    <ToolbarIcon size={size} xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} fill={color}>
       {svgContent}
     </ToolbarIcon>
   )
