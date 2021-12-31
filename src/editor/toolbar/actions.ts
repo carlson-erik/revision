@@ -1,5 +1,5 @@
 import { Editor, Element, Transforms, Node, Text, Selection } from 'slate';
-import { Alignment, CustomEditor, ElementFormat, ElementType, TextFormat } from '../types';
+import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, TextFormat } from '../types';
 
 /* ------------------------ Text Format Actions ------------------------ */
 const isTextFormatActive = (editor: CustomEditor, textFormat: TextFormat) => {
@@ -42,6 +42,7 @@ const isElementTypeActive = (editor:CustomEditor, elementType: ElementType): boo
   const [match] = Editor.nodes(editor, {
     match: node => Element.isElement(node) && node.type === elementType,
   })
+  console.log('match: ', match);
   return !!match
 };
 
@@ -50,17 +51,24 @@ const setElementType = (editor:CustomEditor, elementType: ElementType): void => 
   Transforms.setNodes(editor, { type: elementType }, { mode: 'highest' });
 };
 
-const getElementBlockType = (editor:CustomEditor): ElementType | null => {
-  const path = editor.selection?.anchor.path;
-  
-  if(path) {
-    const element = editor.children[path[0]];
-    if(Element.isElement(element))
-      return element.type;
+const getActiveElement = (editor:CustomEditor): CustomElement | null => {
+  if(!editor.selection) return null;
+  const path = editor.selection.anchor.path;
+  let children = editor.children;
+  let parentNode = null;
+  let foundNode = null;
+  for (let index = 0; index < path.length; index++) {
+    const currLevelLocation = path[index];
+    const currentNode = children[currLevelLocation];
+    if('children' in currentNode){
+      parentNode = {...currentNode};
+      children = currentNode.children
+    } else {
+      foundNode = parentNode;
+    }
   }
-
-  return null;
-};
+  return foundNode;
+}
 
 /* ------------------------ Element Format Actions ------------------------ */
 const isElementFormatActive = (editor:CustomEditor, elementFormat: ElementFormat) => {
@@ -91,7 +99,7 @@ export {
   // Element Type Actions
   isElementTypeActive,
   setElementType,
-  getElementBlockType,
+  getActiveElement,
   // Element Format Actions
   isElementFormatActive,
   hasElementFormatValue,

@@ -176,7 +176,7 @@ const LIST_EXAMPLE: CustomElement[] = [
     children: [
       { type:'list-item', text: 'list item text 1'},
       {
-        type: 'unordered-list',
+        type: 'ordered-list',
         children: [
           { type:'list-item', text: 'list item text 1'},
           { type:'list-item', text: 'list item text 2'},

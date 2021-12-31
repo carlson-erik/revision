@@ -7,12 +7,15 @@ import { useSlate, ReactEditor } from 'slate-react';
 import Button from './components/button';
 import Dropdown, { Option } from './components/dropdown';
 /* -------- Actions -------- */
-import { toggleTextFormat, 
-        isTextFormatActive, 
-        getActiveTextColor, 
-        setElementType, 
-        hasElementFormatValue, 
-        setElementFormat } from './actions';
+import {
+  toggleTextFormat,
+  isTextFormatActive,
+  getActiveTextColor,
+  setElementType,
+  hasElementFormatValue,
+  setElementFormat,
+  getActiveElement
+} from './actions';
 /* -------- Icon Components -------- */
 import Bold from './icons/bold';
 import Italic from './icons/italic';
@@ -23,6 +26,7 @@ import Paragraph from './icons/paragraph';
 import Heading from './icons/heading';
 import { ElementType } from '../types';
 import Align from './icons/align';
+import List from './icons/list';
 
 interface PortalProps {
   children: any;
@@ -35,7 +39,7 @@ const Portal = (props: PortalProps) => {
     : null
 }
 
-const elementOptions: Option[] = [ 
+const elementOptions: Option[] = [
   {
     label: 'Paragraph',
     value: 'paragraph',
@@ -130,10 +134,12 @@ const HoveringToolbar = () => {
     if (!el || !selection || !ReactEditor.isFocused(editor)) {
       setEditType('hidden');
       return;
-    } else if (Range.isCollapsed(selection) && editType !== 'element') {
-      setEditType('element');
-    } else if (!Range.isCollapsed(selection) && editType !== 'text') {
+    }
+
+    if (!Range.isCollapsed(selection)) {
       setEditType('text');
+    } else {
+      setEditType('element')
     }
 
     const domSelection = window.getSelection();
@@ -150,6 +156,8 @@ const HoveringToolbar = () => {
   })
 
   if (editType === 'hidden' && ref) ref.removeAttribute('style');
+
+  const activeElement = getActiveElement(editor);
 
   return (
     <Portal>
@@ -205,48 +213,75 @@ const HoveringToolbar = () => {
             </>
           ) : (
             <>
-              <Dropdown 
+              <Dropdown
                 options={elementOptions}
                 placeholder='Select element type'
                 onChange={(newOption) => {
                   setElementType(editor, newOption.value as ElementType)
                 }}
               />
+              {(activeElement?.type !== 'ordered-list') && (activeElement?.type !== 'unordered-list')
+                ? (
+                  <>
+                    <Button
+                      active={hasElementFormatValue(editor, 'align', 'left')}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        setElementFormat(editor, 'align', 'left');
+                      }}
+                    >
+                      <Align direction='left' color='black' />
+                    </Button>
+                    <Button
+                      active={hasElementFormatValue(editor, 'align', 'center')}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        setElementFormat(editor, 'align', 'center');
+                      }}
+                    >
+                      <Align direction='center' color='black' />
+                    </Button>
+                    <Button
+                      active={hasElementFormatValue(editor, 'align', 'right')}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        setElementFormat(editor, 'align', 'right');
+                      }}
+                    >
+                      <Align direction='right' color='black' />
+                    </Button>
+                    <Button
+                      active={hasElementFormatValue(editor, 'align', 'justify')}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        setElementFormat(editor, 'align', 'justify');
+                      }}
+                    >
+                      <Align direction='justify' color='black' />
+                    </Button>
+                  </>
+                ) : null}
               <Button
-                active={hasElementFormatValue(editor, 'align', 'left')}
+                active={activeElement?.type === 'ordered-list'}
                 onMouseDown={(event) => {
                   event.preventDefault();
-                  setElementFormat(editor, 'align', 'left');
+                  if(activeElement?.type !== 'ordered-list') {
+                    console.log('update to ordered list');
+                  }
                 }}
               >
-                <Align direction='left' color='black' />
+                <List ordered={true} color='black' />
               </Button>
               <Button
-                active={hasElementFormatValue(editor, 'align', 'center')}
+                active={activeElement?.type === 'unordered-list'}
                 onMouseDown={(event) => {
                   event.preventDefault();
-                  setElementFormat(editor, 'align', 'center');
+                  if(activeElement?.type !== 'unordered-list') {
+                    console.log('update to unordered list');
+                  }
                 }}
               >
-                <Align direction='center' color='black' />
-              </Button>
-              <Button
-                active={hasElementFormatValue(editor, 'align', 'right')}
-                onMouseDown={(event) => {
-                  event.preventDefault();
-                  setElementFormat(editor, 'align', 'right');
-                }}
-              >
-                <Align direction='right' color='black' />
-              </Button>
-              <Button
-                active={hasElementFormatValue(editor, 'align', 'justify')}
-                onMouseDown={(event) => {
-                  event.preventDefault();
-                  setElementFormat(editor, 'align', 'justify');
-                }}
-              >
-                <Align direction='justify' color='black' />
+                <List ordered={false} color='black' />
               </Button>
             </>
           )}
