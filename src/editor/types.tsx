@@ -4,42 +4,69 @@ import { HistoryEditor } from 'slate-history';
 
 type Alignment = 'left' | 'right'  | 'center'  | 'justify';
 
-type HeaderType = 'header-one' | 'header-two' | 'header-three' | 'header-four' | 'header-five' | 'header-six'
+type HeaderType = 'header-one' | 'header-two' | 'header-three' | 'header-four' | 'header-five' | 'header-six';
 
-type ElementType = 'paragraph' | HeaderType;
+type ListType = 'ordered-list' | 'unordered-list';
+
+type ElementType = 'paragraph' | HeaderType | ListType;
 
 type ElementFormat = 'align';
 
-type TextFormat = 'bold' | 'italics' | 'underline' | 'strikethrough' | 'textcolor'
+type LeafType = 'text' | 'list-item'
 
-type CustomText = {
+type TextFormat = 'bold' | 'italics' | 'underline' | 'strikethrough' | 'textcolor';
+
+/* -------- Leaves -------- */
+interface Leaf {
+  type: LeafType;
   text: string;
   bold?: true;
   italics?: true;
   underline?: true;
   strikethrough?: true;
-  textcolor ?: string;
-};
+  textcolor?: string;
+}
 
-type ParagraphElement = {
+interface TextLeaf extends Leaf {
+  type: 'text'
+}
+
+interface ListLeaf extends Leaf {
+  type: 'list-item'
+}
+
+type CustomText = TextLeaf | ListLeaf;
+
+/* -------- Elements -------- */
+interface Element {
+  type: ElementType
+}
+
+interface ParagraphElement extends Element {
   type: 'paragraph';
   align: Alignment;
-  children: CustomText[];
+  children: TextLeaf[];
 };
 
-type HeaderElement = {
+interface HeaderElement extends Element {
   type: HeaderType;
   align: Alignment;
-  children: CustomText[];
+  children: TextLeaf[];
 };
 
-type CustomElement = ParagraphElement | HeaderElement;
+interface ListElement extends Element {
+  type: ListType;
+  children: (ListElement | ListLeaf)[];
+}
 
-interface BlurEditor extends BaseEditor { 
+type CustomElement = ParagraphElement | HeaderElement | ListElement;
+
+/* -------- Editor -------- */
+interface BlurSelectionEditor extends BaseEditor { 
   blurSelection: BaseSelection |  null;
 }
 
-type CustomEditor = BaseEditor & ReactEditor & HistoryEditor & BlurEditor;
+type CustomEditor = BaseEditor & ReactEditor & HistoryEditor & BlurSelectionEditor;
 
 declare module 'slate' {
   interface CustomTypes {
@@ -54,6 +81,8 @@ export type {
   CustomEditor,
   CustomElement,
   CustomText,
+  ListLeaf,
+  TextLeaf,
   ElementType,
   ElementFormat,
   TextFormat

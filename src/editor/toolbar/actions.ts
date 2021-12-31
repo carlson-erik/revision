@@ -65,14 +65,14 @@ const getElementBlockType = (editor:CustomEditor): ElementType | null => {
 /* ------------------------ Element Format Actions ------------------------ */
 const isElementFormatActive = (editor:CustomEditor, elementFormat: ElementFormat) => {
   const [match] = Editor.nodes(editor, {
-    match: node => Element.isElement(node) && node[elementFormat] !== null,
+    match: node => Element.isElement(node) && elementFormat in node !== null,
   })
   return !!match
 };
 
 const hasElementFormatValue = (editor:CustomEditor, elementFormat:ElementFormat, value: Alignment) => {
   const [match] = Editor.nodes(editor, {
-    match: node => Element.isElement(node) && node[elementFormat] !== null && node[elementFormat] === value,
+    match: node => Element.isElement(node) && elementFormat in node && node[elementFormat] === value,
   })
   return !!match
 }

@@ -1,15 +1,17 @@
-import { useMemo, useState, KeyboardEvent } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { createEditor } from 'slate';
+import { createEditor, Descendant } from 'slate';
 import { Slate, Editable, withReact, RenderLeafProps, RenderElementProps } from 'slate-react';
 import { withHistory } from 'slate-history';
 /* -------- Types -------- */
 import { CustomEditor, CustomElement } from './types';
 /* -------- Editor Components -------- */
-import TextLeaf from './elements/text-leaf';
+import TextLeaf from './leaves/text';
 import DefaultElement from './elements/';
 import HeaderElement from './elements/header';
+import ListElement from './elements/list';
 import HoveringToolbar from './toolbar';
+import ListLeaf from './leaves/list';
 
 const Container = styled.div`
   padding: 1rem;
@@ -21,12 +23,6 @@ const Container = styled.div`
   & *::before,
   & *::after {
     box-sizing: border-box;
-  }
-
-  /* Remove default padding */
-  & ul[class],
-  & ol[class] {
-    padding: 0;
   }
 
   /* Remove default margin */
@@ -42,12 +38,6 @@ const Container = styled.div`
   & dl,
   & dd {
     margin: 0;
-  }
-
-  /* Remove list styles on ul, ol elements with a class attribute */
-  & ul[class],
-  & ol[class] {
-    list-style: none;
   }
 
   /* A elements that don't have a class get default styles */
@@ -100,7 +90,7 @@ const EMPTY_DOCUMENT: CustomElement[] = [
   {
     type: 'paragraph',
     align: 'left',
-    children: [{ text: '' }],
+    children: [{ type:'text', text: '' }],
   },
 ];
 
@@ -114,12 +104,18 @@ const renderElement = (props: RenderElementProps) => {
     case 'header-five':
     case 'header-six':
       return <HeaderElement {...props} />;
+    case 'ordered-list':
+    case 'unordered-list':
+      return <ListElement {...props} />;
     default:
       return <DefaultElement {...props} />
   }
 };
 
 const renderLeaf = (props: RenderLeafProps) => {
+  if(props.leaf.type === 'list-item') {
+    return <ListLeaf {...props} />
+  }
   return <TextLeaf {...props} />
 }
 
@@ -132,12 +128,17 @@ const Editor = (props: EditorProps) => {
   const { readOnly, content } = props;
   const editor: CustomEditor = useMemo(() => withHistory(withReact(createEditor())), []);
   const [editorContent, setEditorContent] = useState<CustomElement[]>(content ? content : EMPTY_DOCUMENT);
+
+  const onChangeHandler = (value: Descendant[]) => {
+    setEditorContent(value as CustomElement[])
+  }
+
   return (
     <Container>
       <Slate
         editor={editor}
         value={editorContent}
-        onChange={(value) => setEditorContent(value as CustomElement[])}
+        onChange={onChangeHandler}
       >
         <HoveringToolbar />
         <Editable

@@ -85,6 +85,20 @@ const elementOptions: Option[] = [
       <Heading color='#52555F' headingSize={6} />
     )
   },
+  {
+    label: 'Ordered List',
+    value: 'ordered-list',
+    icon: (
+      <Heading color='#52555F' />
+    )
+  },
+  {
+    label: 'Unordered List',
+    value: 'unordered-list',
+    icon: (
+      <Heading color='#52555F' />
+    )
+  },
 ];
 
 const Menu = styled.div`

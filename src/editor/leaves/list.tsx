@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import {RenderLeafProps} from 'slate-react';
+import { RenderLeafProps } from 'slate-react';
 
-const LeafSpan = styled.span<{
+const LeafItem = styled.li<{
   bold?: boolean;
   italics?: boolean;
   strikethrough?: boolean;
@@ -22,9 +22,9 @@ const LeafSpan = styled.span<{
   color: ${props => props.textcolor ? props.textcolor : 'black'};
 `;
 
-const TextLeaf = (props: RenderLeafProps) => {
+const ListLeaf = (props: RenderLeafProps) => {
   return (
-    <LeafSpan
+    <LeafItem
       {...props.attributes}
       italics={props.leaf.italics}
       underline={props.leaf.underline}
@@ -33,8 +33,8 @@ const TextLeaf = (props: RenderLeafProps) => {
       textcolor={props.leaf.textcolor}
     >
       {props.children}
-    </LeafSpan>
+    </LeafItem>
   )
 }
 
-export default TextLeaf;
+export default ListLeaf;
