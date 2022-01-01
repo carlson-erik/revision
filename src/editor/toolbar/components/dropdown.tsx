@@ -1,45 +1,51 @@
-import { Fragment, ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { useSlate } from 'slate-react';
 /* -------- Components -------- */
 import Popper from './popper';
 /* -------- Editor Actions -------- */
-import { getActiveElement } from '../actions';
+import { getElementNode } from '../actions';
 /* -------- Types -------- */
 import { CustomEditor } from '../../types';
 /* -------- Icons -------- */
 import Chevron from '../icons/chevron';
 
-const Container = styled.div`
+const Container = styled.div<{ disabled: boolean}>`
   width: 100%;
   height: 100%;
   display: flex;
-  width: 9rem;
+  width: 10rem;
   border: 1px solid #E5E8EC;
   margin-right: 4px;
+
+  background-color: ${props => props.disabled ? '#EFF2F4' : '#FFFFFF'};
 `;
-const SelectedValue = styled.div`
-  height: 100%;
+
+const SelectedValue = styled.div<{ disabled: boolean}>`
+  height: 2rem;
   flex-grow: 1;
   display: flex;
   align-items: center;
   padding-left: 0.5rem;
-  color: #52555F;
+  color: #;
   cursor: default;
   font-size: 14px;
 
+  color: ${props => props.disabled ? '#7C818B' : '#343740'};
+  
   & svg {
     padding-right: 0.5rem;
   }
 `;
 
-const IconContainer = styled.div`
+const IconContainer = styled.div<{ disabled: boolean}>`
   height: 2rem;
   width: 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #52555F;
+
+  color: ${props => props.disabled ? '#7C818B' : '#343740'};
 `;
 
 const OLContainer = styled.ul`
@@ -48,7 +54,7 @@ const OLContainer = styled.ul`
   border-top: 0;
   margin-block: 0;
   padding: 0;
-  width: 9rem;
+  width: 10rem;
 `;
 
 const OptionListItem = styled.li<{ selected: boolean; }>`
@@ -93,13 +99,13 @@ const OptionsList = (props:OptionsListProps) => {
           <OptionListItem 
             key={option.value} 
             selected={selectedOption && selectedOption.value === option.value ? true : false} 
-            onClick={() => {
+            onMouseDown={(event) => {
               onChange(option);
               onClose();
             }}
           >
             {option.icon ? (
-              <IconContainer>
+              <IconContainer disabled={false}>
                 {option.icon}
               </IconContainer>
               ) : null}
@@ -111,25 +117,25 @@ const OptionsList = (props:OptionsListProps) => {
   )
 }
 
+// Gets the active element and as long as it exists, we find the current Element
 const getCurrentOption = (editor:CustomEditor, options: Option[]) => {
-  const activeElement = getActiveElement(editor);
+  const activeElement = getElementNode(editor);
 
-  // if we have a block type, get the needed display details (icon, label, etc)
   if(activeElement !== null)
     return options.filter(option => option.value === activeElement.type)[0];
 
-  // no blockType selected, return null
   return null;
 }
 
 interface DropdownProps {
   options: Option[];
   placeholder: string;
+  disabled?: boolean;
   onChange: (value:Option) => void;
 }
 
 const Dropdown = (props: DropdownProps) => {
-  const { options, placeholder, onChange } = props;
+  const { options, placeholder, onChange, disabled=false } = props;
   const editor = useSlate();
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -141,26 +147,29 @@ const Dropdown = (props: DropdownProps) => {
     <>
       <Container 
         onClick={() => {
-          setIsOpen(!isOpen);
+          if(!disabled) {
+            setIsOpen(!isOpen);
+          }
         }} 
+        disabled={disabled}
         ref={setContainerRef}>
-        <SelectedValue>
-          {selectedOption !== null ? (
-            <Fragment>
+        <SelectedValue disabled={disabled}>
+          {selectedOption !== null && !disabled ? (
+            <>
               {selectedOption.icon ? (
-                <IconContainer>
+                <IconContainer disabled={disabled}>
                   {selectedOption.icon}
                 </IconContainer>
                 ) : null}
               {selectedOption.label}
-            </Fragment>
+            </>
           ) : placeholder_text}
         </SelectedValue>
-        <IconContainer>
+        <IconContainer disabled={disabled}>
           { isOpen ? (
-            <Chevron size='small' color='#52555F' direction='down'/>
+            <Chevron size='small' color='#343740' direction='down'/>
           ): (
-            <Chevron size='small' color='#52555F' direction='up'/>
+            <Chevron size='small' color='#343740' direction='up'/>
           )}
         </IconContainer>
       </Container>

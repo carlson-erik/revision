@@ -1,4 +1,4 @@
-import { Editor, Element, Transforms, Node, Text, Selection } from 'slate';
+import { Editor, Element, Transforms, Node, Text, Selection, Path } from 'slate';
 import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, TextFormat } from '../types';
 
 /* ------------------------ Text Format Actions ------------------------ */
@@ -42,7 +42,6 @@ const isElementTypeActive = (editor:CustomEditor, elementType: ElementType): boo
   const [match] = Editor.nodes(editor, {
     match: node => Element.isElement(node) && node.type === elementType,
   })
-  console.log('match: ', match);
   return !!match
 };
 
@@ -51,7 +50,7 @@ const setElementType = (editor:CustomEditor, elementType: ElementType): void => 
   Transforms.setNodes(editor, { type: elementType }, { mode: 'highest' });
 };
 
-const getActiveElement = (editor:CustomEditor): CustomElement | null => {
+const getElementNode = (editor:CustomEditor): CustomElement | null => {
   if(!editor.selection) return null;
   const path = editor.selection.anchor.path;
   let children = editor.children;
@@ -68,6 +67,28 @@ const getActiveElement = (editor:CustomEditor): CustomElement | null => {
     }
   }
   return foundNode;
+}
+
+const getElementPath = (editor:CustomEditor): Path | null => {
+  if(!editor.selection) return null;
+
+  const path = editor.selection.anchor.path;
+  let children = editor.children;
+  let elementPath: Path | null  = [];
+
+  for (let index = 0; index < path.length; index++) {
+    const currLevelLocation = path[index];
+    const currentNode = children[currLevelLocation];
+    if('children' in currentNode){
+      children = currentNode.children;
+      elementPath.push(currLevelLocation);
+    }
+  }
+
+  if(elementPath.length === 0)
+    return null;
+
+  return elementPath;
 }
 
 /* ------------------------ Element Format Actions ------------------------ */
@@ -99,7 +120,8 @@ export {
   // Element Type Actions
   isElementTypeActive,
   setElementType,
-  getActiveElement,
+  getElementNode,
+  getElementPath,
   // Element Format Actions
   isElementFormatActive,
   hasElementFormatValue,

@@ -14,7 +14,7 @@ import {
   setElementType,
   hasElementFormatValue,
   setElementFormat,
-  getActiveElement
+  getElementNode
 } from './actions';
 /* -------- Icon Components -------- */
 import Bold from './icons/bold';
@@ -27,6 +27,8 @@ import Heading from './icons/heading';
 import { ElementType } from '../types';
 import Align from './icons/align';
 import List from './icons/list';
+import Indent from './icons/indent';
+import Unindent from './icons/unindent';
 
 interface PortalProps {
   children: any;
@@ -44,65 +46,51 @@ const elementOptions: Option[] = [
     label: 'Paragraph',
     value: 'paragraph',
     icon: (
-      <Paragraph color='#52555F' />
+      <Paragraph color='#343740' />
     )
   },
   {
     label: 'Heading 1',
     value: 'header-one',
     icon: (
-      <Heading color='#52555F' headingSize={1} />
+      <Heading color='#343740' headingSize={1} />
     )
   },
   {
     label: 'Heading 2',
     value: 'header-two',
     icon: (
-      <Heading color='#52555F' headingSize={2} />
+      <Heading color='#343740' headingSize={2} />
     )
   },
   {
     label: 'Heading 3',
     value: 'header-three',
     icon: (
-      <Heading color='#52555F' headingSize={3} />
+      <Heading color='#343740' headingSize={3} />
     )
   },
   {
     label: 'Heading 4',
     value: 'header-four',
     icon: (
-      <Heading color='#52555F' headingSize={4} />
+      <Heading color='#343740' headingSize={4} />
     )
   },
   {
     label: 'Heading 5',
     value: 'header-five',
     icon: (
-      <Heading color='#52555F' headingSize={5} />
+      <Heading color='#343740' headingSize={5} />
     )
   },
   {
     label: 'Heading 6',
     value: 'header-six',
     icon: (
-      <Heading color='#52555F' headingSize={6} />
+      <Heading color='#343740' headingSize={6} />
     )
-  },
-  {
-    label: 'Ordered List',
-    value: 'ordered-list',
-    icon: (
-      <Heading color='#52555F' />
-    )
-  },
-  {
-    label: 'Unordered List',
-    value: 'unordered-list',
-    icon: (
-      <Heading color='#52555F' />
-    )
-  },
+  }
 ];
 
 const Menu = styled.div`
@@ -157,7 +145,7 @@ const HoveringToolbar = () => {
 
   if (editType === 'hidden' && ref) ref.removeAttribute('style');
 
-  const activeElement = getActiveElement(editor);
+  const activeElement = getElementNode(editor);
 
   return (
     <Portal>
@@ -213,16 +201,17 @@ const HoveringToolbar = () => {
             </>
           ) : (
             <>
-              <Dropdown
-                options={elementOptions}
-                placeholder='Select element type'
-                onChange={(newOption) => {
-                  setElementType(editor, newOption.value as ElementType)
-                }}
-              />
               {(activeElement?.type !== 'ordered-list') && (activeElement?.type !== 'unordered-list')
                 ? (
                   <>
+                    <Dropdown
+                      options={elementOptions}
+                      placeholder='Select new element..'
+                      disabled={false}
+                      onChange={(newOption) => {
+                        setElementType(editor, newOption.value as ElementType)
+                      }}
+                    />
                     <Button
                       active={hasElementFormatValue(editor, 'align', 'left')}
                       onMouseDown={(event) => {
@@ -283,6 +272,29 @@ const HoveringToolbar = () => {
               >
                 <List ordered={false} color='black' />
               </Button>
+              {(activeElement?.type === 'ordered-list') || (activeElement?.type === 'unordered-list')
+                ? (
+                  <>
+                    <Button
+                      active={hasElementFormatValue(editor, 'align', 'left')}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        console.log('indent clicked');
+                      }}
+                    >
+                      <Indent color='black' />
+                    </Button>
+                    <Button
+                      active={hasElementFormatValue(editor, 'align', 'left')}
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        console.log('unindent clicked');
+                      }}
+                    >
+                      <Unindent color='black' />
+                    </Button>
+                  </>
+                ) : null}
             </>
           )}
       </Menu>

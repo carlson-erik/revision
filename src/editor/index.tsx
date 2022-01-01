@@ -15,7 +15,6 @@ import ListLeaf from './leaves/list';
 
 const Container = styled.div`
   padding: 1rem;
-  margin: 2rem;
   border: 1px solid gray;
 
   /* Box sizing rules */
