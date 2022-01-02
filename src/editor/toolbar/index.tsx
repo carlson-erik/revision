@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import { Range } from 'slate';
 import { useSlate, ReactEditor } from 'slate-react';
 /* -------- Components -------- */
 import Button from './components/button';
 import Dropdown, { Option } from './components/dropdown';
-/* -------- Actions -------- */
+import Portal from './components/portal';
+/* -------- Actions & Types-------- */
 import {
   toggleTextFormat,
   isTextFormatActive,
@@ -16,6 +16,7 @@ import {
   setElementFormat,
   getElementNode
 } from './actions';
+import { ElementType } from '../types';
 /* -------- Icon Components -------- */
 import Bold from './icons/bold';
 import Italic from './icons/italic';
@@ -24,22 +25,10 @@ import Underline from './icons/underline';
 import Color from './icons/color';
 import Paragraph from './icons/paragraph';
 import Heading from './icons/heading';
-import { ElementType } from '../types';
 import Align from './icons/align';
 import List from './icons/list';
 import Indent from './icons/indent';
 import Unindent from './icons/unindent';
-
-interface PortalProps {
-  children: any;
-}
-
-const Portal = (props: PortalProps) => {
-  const { children } = props;
-  return typeof document === 'object'
-    ? ReactDOM.createPortal(children, document.body)
-    : null
-}
 
 const elementOptions: Option[] = [
   {
@@ -105,15 +94,43 @@ const Menu = styled.div`
   opacity: 0;
   border-radius: 2px;
   transition: opacity 0.25s;
-  color: red;
   display: flex;
   align-items: center;
 `;
 
-const HoveringToolbar = () => {
+const ToolbarSection = styled.div<{ noPadding?: boolean }>`
+  width: fit-content;
+  height: fit-content;
+  margin-right: ${props => props.noPadding ? '0' : '0.25rem'};
+  display: flex;
+  align-items: center;
+`;
+
+interface HoveringToolbarProps {
+  containerRef: HTMLElement;
+}
+
+const HoveringToolbar = (props: HoveringToolbarProps) => {
+  const { containerRef } = props;
   const [ref, setRef] = useState<HTMLDivElement | null>();
   const [editType, setEditType] = useState<'text' | 'element' | 'hidden'>('hidden');
   const editor = useSlate();
+
+  const handleOutsideClick = (event: any) => {
+    if (containerRef && !containerRef.contains(event.target) && ref && !ref.contains(event.target)) {
+      ref.removeAttribute('style')
+    }
+  }
+
+  useEffect(() => {
+    // remove existing
+    document.removeEventListener("mousedown", handleOutsideClick)
+    // listen for clicks and close dropdown on body
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [containerRef, ref]);
 
   useEffect(() => {
     const el = ref;
@@ -149,7 +166,7 @@ const HoveringToolbar = () => {
 
   return (
     <Portal>
-      <Menu ref={setRef}>
+      <Menu ref={setRef} className='rt-editor-toolbar'>
         {editType === 'text'
           ? (
             <>
@@ -204,57 +221,61 @@ const HoveringToolbar = () => {
               {(activeElement?.type !== 'ordered-list') && (activeElement?.type !== 'unordered-list')
                 ? (
                   <>
-                    <Dropdown
-                      options={elementOptions}
-                      placeholder='Select new element..'
-                      disabled={false}
-                      onChange={(newOption) => {
-                        setElementType(editor, newOption.value as ElementType)
-                      }}
-                    />
-                    <Button
-                      active={hasElementFormatValue(editor, 'align', 'left')}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        setElementFormat(editor, 'align', 'left');
-                      }}
-                    >
-                      <Align direction='left' color='black' />
-                    </Button>
-                    <Button
-                      active={hasElementFormatValue(editor, 'align', 'center')}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        setElementFormat(editor, 'align', 'center');
-                      }}
-                    >
-                      <Align direction='center' color='black' />
-                    </Button>
-                    <Button
-                      active={hasElementFormatValue(editor, 'align', 'right')}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        setElementFormat(editor, 'align', 'right');
-                      }}
-                    >
-                      <Align direction='right' color='black' />
-                    </Button>
-                    <Button
-                      active={hasElementFormatValue(editor, 'align', 'justify')}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        setElementFormat(editor, 'align', 'justify');
-                      }}
-                    >
-                      <Align direction='justify' color='black' />
-                    </Button>
+                    <ToolbarSection>
+                      <Dropdown
+                        options={elementOptions}
+                        placeholder='Select new element..'
+                        disabled={false}
+                        onChange={(newOption) => {
+                          setElementType(editor, newOption.value as ElementType)
+                        }}
+                      />
+                    </ToolbarSection>
+                    <ToolbarSection>
+                      <Button
+                        active={hasElementFormatValue(editor, 'align', 'left')}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          setElementFormat(editor, 'align', 'left');
+                        }}
+                      >
+                        <Align direction='left' color='black' />
+                      </Button>
+                      <Button
+                        active={hasElementFormatValue(editor, 'align', 'center')}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          setElementFormat(editor, 'align', 'center');
+                        }}
+                      >
+                        <Align direction='center' color='black' />
+                      </Button>
+                      <Button
+                        active={hasElementFormatValue(editor, 'align', 'right')}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          setElementFormat(editor, 'align', 'right');
+                        }}
+                      >
+                        <Align direction='right' color='black' />
+                      </Button>
+                      <Button
+                        active={hasElementFormatValue(editor, 'align', 'justify')}
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          setElementFormat(editor, 'align', 'justify');
+                        }}
+                      >
+                        <Align direction='justify' color='black' />
+                      </Button>
+                    </ToolbarSection>
                   </>
                 ) : null}
               <Button
                 active={activeElement?.type === 'ordered-list'}
                 onMouseDown={(event) => {
                   event.preventDefault();
-                  if(activeElement?.type !== 'ordered-list') {
+                  if (activeElement?.type !== 'ordered-list') {
                     console.log('update to ordered list');
                   }
                 }}
@@ -265,7 +286,7 @@ const HoveringToolbar = () => {
                 active={activeElement?.type === 'unordered-list'}
                 onMouseDown={(event) => {
                   event.preventDefault();
-                  if(activeElement?.type !== 'unordered-list') {
+                  if (activeElement?.type !== 'unordered-list') {
                     console.log('update to unordered list');
                   }
                 }}

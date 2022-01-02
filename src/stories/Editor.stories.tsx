@@ -1,8 +1,9 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { withKnobs, boolean } from '@storybook/addon-knobs';
-import Editor, { EditorProps } from './';
+import Editor, { EditorProps } from '../editor';
 import { LOREM_IPSUM, HANSEL_AND_GRETEL, LIST_EXAMPLE } from '../mock/content';
 import styled from 'styled-components';
+import './index.css';
 
 const Container = styled.div`
   display:flex;

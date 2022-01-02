@@ -125,6 +125,7 @@ export interface EditorProps {
 
 const Editor = (props: EditorProps) => {
   const { readOnly, content } = props;
+  const [containerRef, setContainerRef]= useState< HTMLElement | null>(null);
   const editor: CustomEditor = useMemo(() => withHistory(withReact(createEditor())), []);
   const [editorContent, setEditorContent] = useState<CustomElement[]>(content ? content : EMPTY_DOCUMENT);
 
@@ -133,13 +134,13 @@ const Editor = (props: EditorProps) => {
   }
 
   return (
-    <Container>
+    <Container className='rt-editor' ref={setContainerRef}>
       <Slate
         editor={editor}
         value={editorContent}
         onChange={onChangeHandler}
       >
-        <HoveringToolbar />
+        {containerRef ? (<HoveringToolbar containerRef={containerRef} />) : null}
         <Editable
           readOnly={readOnly}
           renderLeaf={renderLeaf}

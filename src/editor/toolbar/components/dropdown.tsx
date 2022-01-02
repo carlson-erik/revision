@@ -11,10 +11,9 @@ import { CustomEditor } from '../../types';
 import Chevron from '../icons/chevron';
 
 const Container = styled.div<{ disabled: boolean}>`
-  width: 100%;
+  width: 9rem;
   height: 100%;
   display: flex;
-  width: 10rem;
   border: 1px solid #E5E8EC;
   margin-right: 4px;
 
@@ -29,7 +28,7 @@ const SelectedValue = styled.div<{ disabled: boolean}>`
   padding-left: 0.5rem;
   color: #;
   cursor: default;
-  font-size: 14px;
+  font-size: 12px;
 
   color: ${props => props.disabled ? '#7C818B' : '#343740'};
   
@@ -54,7 +53,7 @@ const OLContainer = styled.ul`
   border-top: 0;
   margin-block: 0;
   padding: 0;
-  width: 10rem;
+  width: 9rem;
 `;
 
 const OptionListItem = styled.li<{ selected: boolean; }>`
@@ -64,7 +63,7 @@ const OptionListItem = styled.li<{ selected: boolean; }>`
   align-items: center;
   color: ${'#52555F'};
   cursor: default;
-  font-size: 14px;
+  font-size: 12px;
 
   &:hover {
     background-color: #D1D4D9;
