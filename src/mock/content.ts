@@ -180,13 +180,13 @@ const LIST_EXAMPLE: CustomElement[] = [
       {
         type: 'list-item',
         children: [
-          { text: 'list item text 1' },
+          { text: 'Erik' },
         ]
       },
       {
         type: 'list-item',
         children: [
-          { text: 'list item text 2' },
+          { text: 'John' },
         ]
       },
       {
@@ -195,15 +195,21 @@ const LIST_EXAMPLE: CustomElement[] = [
           {
             type: 'list-item',
             children: [
-              { text: 'lista item text 1' },
+              { text: 'Jane' },
             ]
           },
           {
             type: 'list-item',
             children: [
-              { text: 'lista item text 1' },
+              { text: 'Lucas' },
             ]
           }
+        ]
+      },
+      {
+        type: 'list-item',
+        children: [
+          { text: 'Chris' },
         ]
       },
     ]

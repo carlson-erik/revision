@@ -157,8 +157,7 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
     } else if (!isList(elementType) && isList(activeElement.type)) {
       /*
        * case: Collapsing list structure into text element.
-       * TODO: Considering collapsing all text nodes into one array as the final behavior
-       * NOTE: This is not currently possible using the current UI.
+       * TODO: This is not currently possible using the current UI.
       */
       const allTextLeaves: TextLeaf[] = collectAllTextLeaves(activeElement as ListElement);
       const textElement: HeaderElement | ParagraphElement = {
