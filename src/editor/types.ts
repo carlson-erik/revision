@@ -8,17 +8,14 @@ type HeaderType = 'header-one' | 'header-two' | 'header-three' | 'header-four' |
 
 type ListType = 'ordered-list' | 'unordered-list';
 
-type ElementType = 'paragraph' | HeaderType | ListType;
+type ElementType = 'paragraph' | HeaderType | ListType | 'list-item';
 
 type ElementFormat = 'align';
-
-type LeafType = 'text' | 'list-item'
 
 type TextFormat = 'bold' | 'italics' | 'underline' | 'strikethrough' | 'textcolor';
 
 /* -------- Leaves -------- */
-interface Leaf {
-  type: LeafType;
+interface TextLeaf {
   text: string;
   bold?: true;
   italics?: true;
@@ -26,16 +23,6 @@ interface Leaf {
   strikethrough?: true;
   textcolor?: string;
 }
-
-interface TextLeaf extends Leaf {
-  type: 'text'
-}
-
-interface ListLeaf extends Leaf {
-  type: 'list-item'
-}
-
-type CustomText = TextLeaf | ListLeaf;
 
 /* -------- Elements -------- */
 interface Element {
@@ -54,12 +41,17 @@ interface HeaderElement extends Element {
   children: TextLeaf[];
 };
 
-interface ListElement extends Element {
-  type: ListType;
-  children: (ListElement | ListLeaf)[];
+interface ListItemElement extends Element {
+  type: 'list-item';
+  children: TextLeaf[];
 }
 
-type CustomElement = ParagraphElement | HeaderElement | ListElement;
+interface ListElement extends Element {
+  type: ListType;
+  children: (ListElement | ListItemElement)[];
+}
+
+type CustomElement = ParagraphElement | HeaderElement | ListElement | ListItemElement;
 
 /* -------- Editor -------- */
 interface BlurSelectionEditor extends BaseEditor { 
@@ -72,7 +64,7 @@ declare module 'slate' {
   interface CustomTypes {
     Editor: CustomEditor
     Element: CustomElement
-    Text: CustomText
+    Text: TextLeaf
   }
 }
 
@@ -80,8 +72,6 @@ export type {
   Alignment,
   CustomEditor,
   CustomElement,
-  CustomText,
-  ListLeaf,
   TextLeaf,
   ElementType,
   ElementFormat,

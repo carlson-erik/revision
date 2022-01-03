@@ -112,6 +112,15 @@ const getElementPath = (editor: CustomEditor): Path | null => {
   return elementPath;
 }
 
+const getParentElementPath = (editor: CustomEditor): Path | null => {
+  const elementPath = getElementPath(editor);
+  if(elementPath === null || elementPath.length === 1) {
+    return null;
+  }
+  elementPath.pop();
+  return elementPath;
+}
+
 /* ------------------------ Element Format Actions ------------------------ */
 const isElementFormatActive = (editor: CustomEditor, elementFormat: ElementFormat) => {
   const [match] = Editor.nodes(editor, {
@@ -143,6 +152,7 @@ export {
   setElementType,
   getElementNode,
   getElementPath,
+  getParentElementPath,
   // Element Format Actions
   isElementFormatActive,
   hasElementFormatValue,

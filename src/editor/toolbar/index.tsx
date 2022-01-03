@@ -218,7 +218,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
             </>
           ) : (
             <>
-              {(activeElement?.type !== 'ordered-list') && (activeElement?.type !== 'unordered-list')
+              {(activeElement?.type !== 'ordered-list') && (activeElement?.type !== 'unordered-list') && (activeElement?.type !== 'list-item')
                 ? (
                   <>
                     <ToolbarSection>
@@ -289,7 +289,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
               >
                 <List ordered={false} color='black' />
               </Button>
-              {(activeElement?.type === 'ordered-list') || (activeElement?.type === 'unordered-list')
+              {(activeElement?.type === 'ordered-list') || (activeElement?.type === 'unordered-list') || (activeElement?.type === 'list-item')
                 ? (
                   <>
                     <Button

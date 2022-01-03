@@ -10,8 +10,8 @@ import TextLeaf from './leaves/text';
 import DefaultElement from './elements/';
 import HeaderElement from './elements/header';
 import ListElement from './elements/list';
+import ListItemElement from './elements/list-item'
 import HoveringToolbar from './toolbar';
-import ListLeaf from './leaves/list';
 
 const Container = styled.div`
   padding: 1rem;
@@ -89,7 +89,7 @@ const EMPTY_DOCUMENT: CustomElement[] = [
   {
     type: 'paragraph',
     align: 'left',
-    children: [{ type:'text', text: '' }],
+    children: [{ text: '' }],
   },
 ];
 
@@ -106,15 +106,14 @@ const renderElement = (props: RenderElementProps) => {
     case 'ordered-list':
     case 'unordered-list':
       return <ListElement {...props} />;
+    case 'list-item':
+      return <ListItemElement {...props} />;
     default:
       return <DefaultElement {...props} />
   }
 };
 
 const renderLeaf = (props: RenderLeafProps) => {
-  if(props.leaf.type === 'list-item') {
-    return <ListLeaf {...props} />
-  }
   return <TextLeaf {...props} />
 }
 
@@ -140,7 +139,7 @@ const Editor = (props: EditorProps) => {
         value={editorContent}
         onChange={onChangeHandler}
       >
-        {containerRef ? (<HoveringToolbar containerRef={containerRef} />) : null}
+        {containerRef ? <HoveringToolbar containerRef={containerRef} /> : null}
         <Editable
           readOnly={readOnly}
           renderLeaf={renderLeaf}
