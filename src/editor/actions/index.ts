@@ -1,5 +1,5 @@
 import { Editor, Element, Transforms, Node, Text, Path } from 'slate';
-import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, TextFormat } from '../types';
+import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, ListElement, ListItemElement, ListType, TextFormat, TextLeaf } from '../types';
 
 const isList = (elementType: ElementType) => {
   return elementType === 'ordered-list' || elementType === 'unordered-list';
@@ -41,66 +41,41 @@ const getActiveTextColor = (editor: CustomEditor): string => {
   return 'PRIMARY';
 };
 
-/* ------------------------ Element Type Actions ------------------------ */
-const isElementTypeActive = (editor: CustomEditor, elementType: ElementType): boolean => {
-  const [match] = Editor.nodes(editor, {
-    match: node => Element.isElement(node) && node.type === elementType,
-  })
-  return !!match
-};
-
-const setElementType = (editor: CustomEditor, elementType: ElementType): void => {
-  const activeElement = getElementNode(editor);
-  if (activeElement && activeElement.type !== elementType) {
-    console.log(`Update element to ${elementType} at `, getElementPath(editor));
-    if (isList(elementType) && !isList(activeElement.type)) {
-      console.log('create NEW list element')
-    } else if (isList(elementType) && isList(activeElement.type)) { 
-      console.log('update list element type')
-    }  else if (!isList(elementType) && isList(activeElement.type)) { 
-      // This is not currently possible using the current UI
-      console.log('collapse list element into text element');
-    } else {
-      /*
-       * All text (Paragraph and Headings) Elements are top level Elements so 
-       * we update the the highest Node in the current selection.
-      */
-      console.log('update text element type')
-      Transforms.setNodes(editor, { type: elementType }, { mode: 'highest' });
-    }
-  }
-};
+/* ------------------------ Element Node Actions ------------------------ */
 
 const getElementNode = (editor: CustomEditor, customPath?: Path): CustomElement | null => {
   let path;
-  if(customPath) {
+  if (customPath) {
     path = customPath;
   } else {
     if (!editor.selection) return null;
     path = editor.selection.anchor.path;
   }
-  console.log('getElementNode path:', path)
   let children = editor.children;
   let parentNode = null;
   let foundNode = null;
   for (let index = 0; index < path.length; index++) {
     const currLevelLocation = path[index];
     const currentNode = children[currLevelLocation];
-    if ('children' in currentNode) {
+    if (index === path.length - 1 && 'type' in currentNode) {
+      /*
+       * case: path leads to an 'element' node, in which case we want to return it.
+      */
+      foundNode = currentNode;
+    } else if (index === path.length - 1 && !('type' in currentNode)) {
+      /*
+       * case: path leads to 'text leaf' node, in which case we want to return the parent node.
+      */
+      foundNode = parentNode;
+    } else if ('children' in currentNode) {
+      /*
+       * case: iterating over nodes still, need to update parentNode and children
+      */
       parentNode = { ...currentNode };
       children = currentNode.children;
-    } else {
-      foundNode = parentNode;
     }
   }
   return foundNode;
-}
-
-const getParentElementNode = (editor: CustomEditor): CustomElement | null => {
-  const parentPath = getParentElementPath(editor);
-  if(parentPath === null) return null;
-  console.log('parentPath:', parentPath);
-  return getElementNode(editor, parentPath);
 }
 
 const getElementPath = (editor: CustomEditor): Path | null => {
@@ -125,15 +100,77 @@ const getElementPath = (editor: CustomEditor): Path | null => {
   return elementPath;
 }
 
+const getParentElementNode = (editor: CustomEditor): CustomElement | null => {
+  const parentPath = getParentElementPath(editor);
+  if (parentPath === null) return null;
+  return getElementNode(editor, parentPath);
+}
+
 const getParentElementPath = (editor: CustomEditor): Path | null => {
-  console.log('editor:', editor.selection, editor.children);
   const elementPath = getElementPath(editor);
-  if(elementPath === null || elementPath.length === 1) {
+  if (elementPath === null || elementPath.length === 1) {
     return null;
   }
   elementPath.pop();
   return elementPath;
 }
+
+/* ------------------------ Element Type Actions ------------------------ */
+const isElementTypeActive = (editor: CustomEditor, elementType: ElementType): boolean => {
+  const [match] = Editor.nodes(editor, {
+    match: node => Element.isElement(node) && node.type === elementType,
+  })
+  return !!match
+};
+
+const setElementType = (editor: CustomEditor, elementType: ElementType): void => {
+  let activeElement = getElementNode(editor);
+  let useParent: boolean = false;
+  if (activeElement?.type === 'list-item') {
+    activeElement = getParentElementNode(editor);
+    useParent = true;
+  }
+  const path = useParent ? getParentElementPath(editor) : getElementPath(editor);
+  if (path && activeElement && activeElement.type !== elementType) {
+    if (isList(elementType) && !isList(activeElement.type)) {
+      /*
+       * case: converting to list element from existing text element 
+      */
+      const listElement: ListElement = {
+        type: elementType as ListType,
+        children: [
+          {
+            type: 'list-item',
+            children: [
+              ...activeElement.children
+            ] as TextLeaf[]
+          }
+        ]
+      }
+      // Remove old Text Element
+      Transforms.removeNodes(editor, { at: path });
+      // Add new List Element
+      Transforms.insertNodes(editor, listElement, { at: path });
+    } else if (isList(elementType) && isList(activeElement.type)) {
+      /*
+       * case: changing list element types in an already existing list element structure
+      */
+      Transforms.setNodes(editor, { type: elementType }, { at: path });
+    } else if (!isList(elementType) && isList(activeElement.type)) {
+      /*
+       * case: Collapsing list structure into text element.
+       * TODO: Considering collapsing all text nodes into one array as the final behavior
+       * NOTE: This is not currently possible using the current UI.
+      */
+      console.log('collapse list element into text element');
+    } else {
+      /*
+       * case: changing text element types in an already existing text element structure
+      */
+      Transforms.setNodes(editor, { type: elementType }, { mode: 'highest' });
+    }
+  }
+};
 
 /* ------------------------ Element Format Actions ------------------------ */
 const isElementFormatActive = (editor: CustomEditor, elementFormat: ElementFormat) => {
@@ -161,13 +198,14 @@ export {
   toggleTextFormat,
   setTextColor,
   getActiveTextColor,
+  // Element Node Actions 
+  getElementNode,
+  getElementPath,
+  getParentElementNode,
+  getParentElementPath,
   // Element Type Actions
   isElementTypeActive,
   setElementType,
-  getElementNode,
-  getParentElementNode,
-  getElementPath,
-  getParentElementPath,
   // Element Format Actions
   isElementFormatActive,
   hasElementFormatValue,

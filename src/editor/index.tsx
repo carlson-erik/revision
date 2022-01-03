@@ -144,10 +144,6 @@ const Editor = (props: EditorProps) => {
           readOnly={readOnly}
           renderLeaf={renderLeaf}
           renderElement={renderElement}
-          onBlur={() => {
-            // update blurSelection with last selection before click out
-            editor.blurSelection = editor.selection;
-          }}
         />
       </Slate>
     </Container>

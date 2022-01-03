@@ -164,11 +164,8 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
   if (editType === 'hidden' && ref) ref.removeAttribute('style');
 
   const activeElement = getElementNode(editor);
-
   const activeElementParent = getParentElementNode(editor);
   
-  console.log('activeElementParent:', activeElementParent);
-
   return (
     <Portal>
       <Menu ref={setRef} className='rt-editor-toolbar'>
@@ -223,19 +220,19 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
             </>
           ) : (
             <>
+              <ToolbarSection>
+                <Dropdown
+                  disabled={(activeElement?.type === 'ordered-list') || (activeElement?.type === 'unordered-list') || (activeElement?.type === 'list-item')}
+                  options={elementOptions}
+                  placeholder='Select new element..'
+                  onChange={(newOption) => {
+                    setElementType(editor, newOption.value as ElementType)
+                  }}
+                />
+              </ToolbarSection>
               {(activeElement?.type !== 'ordered-list') && (activeElement?.type !== 'unordered-list') && (activeElement?.type !== 'list-item')
                 ? (
                   <>
-                    <ToolbarSection>
-                      <Dropdown
-                        options={elementOptions}
-                        placeholder='Select new element..'
-                        disabled={false}
-                        onChange={(newOption) => {
-                          setElementType(editor, newOption.value as ElementType)
-                        }}
-                      />
-                    </ToolbarSection>
                     <ToolbarSection>
                       <Button
                         active={hasElementFormatValue(editor, 'align', 'left')}
@@ -298,7 +295,6 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                 ? (
                   <>
                     <Button
-                      active={hasElementFormatValue(editor, 'align', 'left')}
                       onMouseDown={(event) => {
                         event.preventDefault();
                         console.log('indent clicked');
@@ -307,7 +303,6 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                       <Indent color='black' />
                     </Button>
                     <Button
-                      active={hasElementFormatValue(editor, 'align', 'left')}
                       onMouseDown={(event) => {
                         event.preventDefault();
                         console.log('unindent clicked');
