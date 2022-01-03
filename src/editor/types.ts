@@ -2,13 +2,19 @@ import { BaseEditor, BaseSelection } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 
+/* -------- Element Types -------- */
+
+export type HeaderElementType = 'header-one' | 'header-two' | 'header-three' | 'header-four' | 'header-five' | 'header-six';
+
+export type ListElementType = 'ordered-list' | 'unordered-list';
+
+export type TextElementType = 'paragraph' | HeaderElementType;
+
+export type ElementType = TextElementType | ListElementType | 'list-item';
+
+/* -------- Formats -------- */
+
 export type Alignment = 'left' | 'right'  | 'center'  | 'justify';
-
-export type HeaderType = 'header-one' | 'header-two' | 'header-three' | 'header-four' | 'header-five' | 'header-six';
-
-export type ListType = 'ordered-list' | 'unordered-list';
-
-export type ElementType = 'paragraph' | HeaderType | ListType | 'list-item';
 
 export type ElementFormat = 'align';
 
@@ -36,7 +42,7 @@ export interface ParagraphElement extends Element {
 };
 
 export interface HeaderElement extends Element {
-  type: HeaderType;
+  type: HeaderElementType;
   align: Alignment;
   children: TextLeaf[];
 };
@@ -47,7 +53,7 @@ export interface ListItemElement extends Element {
 }
 
 export interface ListElement extends Element {
-  type: ListType;
+  type: ListElementType;
   children: (ListElement | ListItemElement)[];
 }
 

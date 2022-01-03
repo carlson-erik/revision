@@ -1,9 +1,7 @@
 import { Editor, Element, Transforms, Node, Text, Path } from 'slate';
-import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, ListElement, ListItemElement, ListType, TextFormat, TextLeaf } from '../types';
+import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, HeaderElement, ListElement, ListElementType, ParagraphElement, TextElementType, TextFormat, TextLeaf } from '../types';
 
-const isList = (elementType: ElementType) => {
-  return elementType === 'ordered-list' || elementType === 'unordered-list';
-}
+import { isList, collectAllTextLeaves } from './utils';
 
 /* ------------------------ Text Format Actions ------------------------ */
 const isTextFormatActive = (editor: CustomEditor, textFormat: TextFormat) => {
@@ -137,7 +135,7 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
        * case: converting to list element from existing text element 
       */
       const listElement: ListElement = {
-        type: elementType as ListType,
+        type: elementType as ListElementType,
         children: [
           {
             type: 'list-item',
@@ -149,7 +147,7 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
       }
       // Remove old Text Element
       Transforms.removeNodes(editor, { at: path });
-      // Add new List Element
+      // Insert new List Element
       Transforms.insertNodes(editor, listElement, { at: path });
     } else if (isList(elementType) && isList(activeElement.type)) {
       /*
@@ -162,6 +160,18 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
        * TODO: Considering collapsing all text nodes into one array as the final behavior
        * NOTE: This is not currently possible using the current UI.
       */
+      const allTextLeaves: TextLeaf[] = collectAllTextLeaves(activeElement as ListElement);
+      const textElement: HeaderElement | ParagraphElement = {
+        type: elementType as TextElementType,
+        align: 'left',
+        children: [
+          ...allTextLeaves
+        ]
+      };
+      // Remove old List Element
+      Transforms.removeNodes(editor, { at: path });
+      // Insert new Text Element
+      Transforms.insertNodes(editor, textElement, { at: path });
       console.log('collapse list element into text element');
     } else {
       /*
