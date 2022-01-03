@@ -4,7 +4,7 @@ import { useSlate } from 'slate-react';
 /* -------- Components -------- */
 import Popper from './popper';
 /* -------- Editor Actions -------- */
-import { getElementNode } from '../actions';
+import { getElementNode } from '../../actions';
 /* -------- Types -------- */
 import { CustomEditor } from '../../types';
 /* -------- Icons -------- */
@@ -15,7 +15,6 @@ const Container = styled.div<{ disabled: boolean}>`
   height: 100%;
   display: flex;
   border: 1px solid #E5E8EC;
-  margin-right: 4px;
 
   background-color: ${props => props.disabled ? '#EFF2F4' : '#FFFFFF'};
 `;
@@ -98,7 +97,7 @@ const OptionsList = (props:OptionsListProps) => {
           <OptionListItem 
             key={option.value} 
             selected={selectedOption && selectedOption.value === option.value ? true : false} 
-            onMouseDown={(event) => {
+            onMouseDown={() => {
               onChange(option);
               onClose();
             }}

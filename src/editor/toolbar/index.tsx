@@ -15,7 +15,7 @@ import {
   hasElementFormatValue,
   setElementFormat,
   getElementNode
-} from './actions';
+} from '../actions';
 import { ElementType } from '../types';
 /* -------- Icon Components -------- */
 import Bold from './icons/bold';
@@ -275,9 +275,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                 active={activeElement?.type === 'ordered-list'}
                 onMouseDown={(event) => {
                   event.preventDefault();
-                  if (activeElement?.type !== 'ordered-list') {
-                    console.log('update to ordered list');
-                  }
+                  setElementType(editor, 'ordered-list');
                 }}
               >
                 <List ordered={true} color='black' />
@@ -286,9 +284,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                 active={activeElement?.type === 'unordered-list'}
                 onMouseDown={(event) => {
                   event.preventDefault();
-                  if (activeElement?.type !== 'unordered-list') {
-                    console.log('update to unordered list');
-                  }
+                  setElementType(editor, 'unordered-list');
                 }}
               >
                 <List ordered={false} color='black' />
