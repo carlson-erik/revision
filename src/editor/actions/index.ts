@@ -71,9 +71,15 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
   }
 };
 
-const getElementNode = (editor: CustomEditor): CustomElement | null => {
-  if (!editor.selection) return null;
-  const path = editor.selection.anchor.path;
+const getElementNode = (editor: CustomEditor, customPath?: Path): CustomElement | null => {
+  let path;
+  if(customPath) {
+    path = customPath;
+  } else {
+    if (!editor.selection) return null;
+    path = editor.selection.anchor.path;
+  }
+  console.log('getElementNode path:', path)
   let children = editor.children;
   let parentNode = null;
   let foundNode = null;
@@ -82,12 +88,19 @@ const getElementNode = (editor: CustomEditor): CustomElement | null => {
     const currentNode = children[currLevelLocation];
     if ('children' in currentNode) {
       parentNode = { ...currentNode };
-      children = currentNode.children
+      children = currentNode.children;
     } else {
       foundNode = parentNode;
     }
   }
   return foundNode;
+}
+
+const getParentElementNode = (editor: CustomEditor): CustomElement | null => {
+  const parentPath = getParentElementPath(editor);
+  if(parentPath === null) return null;
+  console.log('parentPath:', parentPath);
+  return getElementNode(editor, parentPath);
 }
 
 const getElementPath = (editor: CustomEditor): Path | null => {
@@ -113,6 +126,7 @@ const getElementPath = (editor: CustomEditor): Path | null => {
 }
 
 const getParentElementPath = (editor: CustomEditor): Path | null => {
+  console.log('editor:', editor.selection, editor.children);
   const elementPath = getElementPath(editor);
   if(elementPath === null || elementPath.length === 1) {
     return null;
@@ -151,6 +165,7 @@ export {
   isElementTypeActive,
   setElementType,
   getElementNode,
+  getParentElementNode,
   getElementPath,
   getParentElementPath,
   // Element Format Actions

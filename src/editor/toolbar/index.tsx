@@ -14,7 +14,8 @@ import {
   setElementType,
   hasElementFormatValue,
   setElementFormat,
-  getElementNode
+  getElementNode,
+  getParentElementNode
 } from '../actions';
 import { ElementType } from '../types';
 /* -------- Icon Components -------- */
@@ -164,6 +165,10 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
 
   const activeElement = getElementNode(editor);
 
+  const activeElementParent = getParentElementNode(editor);
+  
+  console.log('activeElementParent:', activeElementParent);
+
   return (
     <Portal>
       <Menu ref={setRef} className='rt-editor-toolbar'>
@@ -272,7 +277,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                   </>
                 ) : null}
               <Button
-                active={activeElement?.type === 'ordered-list'}
+                active={activeElementParent?.type === 'ordered-list'}
                 onMouseDown={(event) => {
                   event.preventDefault();
                   setElementType(editor, 'ordered-list');
@@ -281,7 +286,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                 <List ordered={true} color='black' />
               </Button>
               <Button
-                active={activeElement?.type === 'unordered-list'}
+                active={activeElementParent?.type === 'unordered-list'}
                 onMouseDown={(event) => {
                   event.preventDefault();
                   setElementType(editor, 'unordered-list');
