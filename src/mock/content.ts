@@ -175,7 +175,7 @@ const LIST_EXAMPLE: CustomElement[] = [
     ]
   },
   {
-    type: 'ordered-list',
+    type: 'unordered-list',
     children: [
       {
         type: 'list-item',
@@ -190,7 +190,7 @@ const LIST_EXAMPLE: CustomElement[] = [
         ]
       },
       {
-        type: 'unordered-list',
+        type: 'ordered-list',
         children: [
           {
             type: 'list-item',
@@ -203,7 +203,18 @@ const LIST_EXAMPLE: CustomElement[] = [
             children: [
               { text: 'Lucas' },
             ]
-          }
+          },
+          {
+            type: 'unordered-list',
+            children: [
+              {
+                type: 'list-item',
+                children: [
+                  { text: 'Markus' },
+                ]
+              },
+            ]
+          },
         ]
       },
       {

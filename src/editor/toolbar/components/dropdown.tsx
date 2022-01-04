@@ -4,7 +4,7 @@ import { useSlate } from 'slate-react';
 /* -------- Components -------- */
 import Popper from './popper';
 /* -------- Editor Actions -------- */
-import { getElementNode } from '../../actions';
+import { getElementNode, getParentElementNode } from '../../actions';
 /* -------- Types -------- */
 import { CustomEditor } from '../../types';
 /* -------- Icons -------- */
@@ -32,7 +32,7 @@ const SelectedValue = styled.div<{ disabled: boolean}>`
   color: ${props => props.disabled ? '#7C818B' : '#343740'};
   
   & svg {
-    padding-right: 0.5rem;
+    padding-right: 0.25rem;
   }
 `;
 
@@ -69,7 +69,7 @@ const OptionListItem = styled.li<{ selected: boolean; }>`
   }
 
   & svg {
-    padding-right: 0.5rem;
+    padding-right: 0.25rem;
   }
 
   ${props => props.selected ? 'background-color: #D1D4D9;' : ''}
@@ -102,10 +102,8 @@ const OptionsList = (props:OptionsListProps) => {
               onClose();
             }}
           >
-            {option.icon ? (
-              <IconContainer disabled={false}>
-                {option.icon}
-              </IconContainer>
+            {option?.icon ? (
+              option.icon
               ) : null}
             {option.label}
           </OptionListItem>
@@ -116,29 +114,32 @@ const OptionsList = (props:OptionsListProps) => {
 }
 
 // Gets the active element and as long as it exists, we find the current Element
-const getCurrentOption = (editor:CustomEditor, options: Option[]) => {
-  const activeElement = getElementNode(editor);
-
-  if(activeElement !== null)
-    return options.filter(option => option.value === activeElement.type)[0];
-
+const getCurrentOption = (editor:CustomEditor, options: Option[]): Option | null => {
+  let activeElement = getElementNode(editor);
+  if(activeElement?.type === 'list-item') {
+    activeElement = getParentElementNode(editor);
+  }
+  if(activeElement !== null) {
+    return options.filter(option => option.value === activeElement?.type)[0];
+  }
   return null;
 }
 
 interface DropdownProps {
   options: Option[];
+  allOptions: Option[];
   placeholder: string;
   disabled?: boolean;
   onChange: (value:Option) => void;
 }
 
 const Dropdown = (props: DropdownProps) => {
-  const { options, placeholder, onChange, disabled=false } = props;
+  const { options, allOptions, placeholder, onChange, disabled=false } = props;
   const editor = useSlate();
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const onClose = () => setIsOpen(false);
-  const selectedOption: Option |  null = getCurrentOption(editor, options);
+  const selectedOption: Option |  null = getCurrentOption(editor, allOptions);
   const placeholder_text: string = placeholder && placeholder !== '' ? placeholder : '';
 
   return (
@@ -155,9 +156,7 @@ const Dropdown = (props: DropdownProps) => {
           {selectedOption !== null && !disabled ? (
             <>
               {selectedOption.icon ? (
-                <IconContainer disabled={disabled}>
-                  {selectedOption.icon}
-                </IconContainer>
+                selectedOption.icon
                 ) : null}
               {selectedOption.label}
             </>

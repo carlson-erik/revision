@@ -157,9 +157,9 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
     } else if (!isList(elementType) && isList(activeElement.type)) {
       /*
        * case: Collapsing list structure into text element.
-       * TODO: This is not currently possible using the current UI.
       */
-      const allTextLeaves: TextLeaf[] = collectAllTextLeaves(activeElement as ListElement);
+      const rootElement = getElementNode(editor, [path[0]]);
+      const allTextLeaves: TextLeaf[] = collectAllTextLeaves(rootElement as ListElement);
       const textElement: HeaderElement | ParagraphElement = {
         type: elementType as TextElementType,
         align: 'left',
@@ -168,10 +168,9 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
         ]
       };
       // Remove old List Element
-      Transforms.removeNodes(editor, { at: path });
+      Transforms.removeNodes(editor, { at: [path[0]] });
       // Insert new Text Element
-      Transforms.insertNodes(editor, textElement, { at: path });
-      console.log('collapse list element into text element');
+      Transforms.insertNodes(editor, textElement, { at: [path[0]] });
     } else {
       /*
        * case: changing text element types in an already existing text element structure

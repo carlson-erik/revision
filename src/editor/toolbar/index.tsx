@@ -83,6 +83,24 @@ const elementOptions: Option[] = [
   }
 ];
 
+const allElementOptions: Option[] = [
+  ...elementOptions,
+  {
+    label: 'Ordered List',
+    value: 'ordered-list',
+    icon: (
+      <List color='#343740' ordered/>
+    )
+  },
+  {
+    label: 'Unordered List',
+    value: 'unordered-list',
+    icon: (
+      <List color='#343740' />
+    )
+  }
+]
+
 const Menu = styled.div`
   padding: 4px;
   background-color: white;
@@ -222,8 +240,8 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
             <>
               <ToolbarSection>
                 <Dropdown
-                  disabled={(activeElement?.type === 'ordered-list') || (activeElement?.type === 'unordered-list') || (activeElement?.type === 'list-item')}
                   options={elementOptions}
+                  allOptions={allElementOptions}
                   placeholder='Select new element..'
                   onChange={(newOption) => {
                     setElementType(editor, newOption.value as ElementType)
