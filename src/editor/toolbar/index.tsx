@@ -15,7 +15,9 @@ import {
   hasElementFormatValue,
   setElementFormat,
   getElementNode,
-  getParentElementNode
+  getParentElementNode,
+  indentListItem,
+  unindentListItem
 } from '../actions';
 import { ElementType } from '../types';
 /* -------- Icon Components -------- */
@@ -315,7 +317,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                     <Button
                       onMouseDown={(event) => {
                         event.preventDefault();
-                        console.log('indent clicked');
+                        indentListItem(editor);
                       }}
                     >
                       <Indent color='black' />
@@ -323,7 +325,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                     <Button
                       onMouseDown={(event) => {
                         event.preventDefault();
-                        console.log('unindent clicked');
+                        unindentListItem(editor);
                       }}
                     >
                       <Unindent color='black' />
