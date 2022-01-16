@@ -32,6 +32,7 @@ import Align from './icons/align';
 import List from './icons/list';
 import Indent from './icons/indent';
 import Unindent from './icons/unindent';
+import { canIndentListItem, canUnindentListItem } from '../actions/list';
 
 const elementOptions: Option[] = [
   {
@@ -91,7 +92,7 @@ const allElementOptions: Option[] = [
     label: 'Ordered List',
     value: 'ordered-list',
     icon: (
-      <List color='#343740' ordered/>
+      <List color='#343740' ordered />
     )
   },
   {
@@ -185,7 +186,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
 
   const activeElement = getElementNode(editor);
   const activeElementParent = getParentElementNode(editor);
-  
+
   return (
     <Portal>
       <Menu ref={setRef} className='rt-editor-toolbar'>
@@ -311,31 +312,34 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
               >
                 <List ordered={false} color='black' />
               </Button>
-              {(activeElement?.type === 'ordered-list') || (activeElement?.type === 'unordered-list') || (activeElement?.type === 'list-item')
+              {(activeElement?.type === 'list-item')
                 ? (
                   <>
-                    <Button
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        indentListItem(editor);
-                      }}
-                    >
-                      <Indent color='black' />
-                    </Button>
-                    <Button
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        unindentListItem(editor);
-                      }}
-                    >
-                      <Unindent color='black' />
-                    </Button>
+                    {canIndentListItem(editor) ? (
+                      <Button
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          indentListItem(editor);
+                        }}>
+                        <Indent color='black' />
+                      </Button>
+                    ) : null}
+                    {canUnindentListItem(editor) ? (
+                      <Button
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          unindentListItem(editor);
+                        }}
+                      >
+                        <Unindent color='black' />
+                      </Button>
+                    ) : null}
                   </>
                 ) : null}
             </>
           )}
       </Menu>
-    </Portal>
+    </Portal >
   )
 }
 

@@ -18,22 +18,24 @@ const getElementNode = (editor: CustomEditor, customPath?: Path): CustomElement 
   for (let index = 0; index < path.length; index++) {
     const currLevelLocation = path[index];
     const currentNode = children[currLevelLocation];
-    if (index === path.length - 1 && 'type' in currentNode) {
-      /*
-       * case: path leads to an 'element' node, in which case we want to return it.
-      */
-      foundNode = currentNode;
-    } else if (index === path.length - 1 && !('type' in currentNode)) {
-      /*
-       * case: path leads to 'text leaf' node, in which case we want to return the parent node.
-      */
-      foundNode = parentNode;
-    } else if ('children' in currentNode) {
-      /*
-       * case: iterating over nodes still, need to update parentNode and children
-      */
-      parentNode = { ...currentNode };
-      children = currentNode.children;
+    if(currentNode){
+      if (index === path.length - 1 && 'type' in currentNode) {
+        /*
+         * case: path leads to an 'element' node, in which case we want to return it.
+        */
+        foundNode = currentNode;
+      } else if (index === path.length - 1 && !('type' in currentNode)) {
+        /*
+         * case: path leads to 'text leaf' node, in which case we want to return the parent node.
+        */
+        foundNode = parentNode;
+      } else if ('children' in currentNode) {
+        /*
+         * case: iterating over nodes still, need to update parentNode and children
+        */
+        parentNode = { ...currentNode };
+        children = currentNode.children;
+      }
     }
   }
   return foundNode;

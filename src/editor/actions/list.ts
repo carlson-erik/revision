@@ -1,6 +1,10 @@
-import { Transforms } from "slate";
+import { Transforms, Path } from "slate";
 import { getElementPath, getElementNode, getParentElementNode } from "./element";
-import { CustomEditor } from "../types";
+import { CustomEditor, CustomElement, ListElement } from "../types";
+
+const isListElement = (element: CustomElement | null): element is ListElement => {
+  return element && (element.type === 'unordered-list' || element.type === 'ordered-list') ? true : false;
+}
 
 const indentListItem = (editor: CustomEditor) => { 
   const currentPath = getElementPath(editor);
@@ -10,14 +14,63 @@ const indentListItem = (editor: CustomEditor) => {
               '\nparentNode:', parentNode, 
               '\ncurrentNode:', currentNode, 
               '\ncurrentPath:', currentPath,
-              '\n-------- indentListItem --------',);
+    '\n-------- indentListItem --------');
+  if (currentNode && currentNode.type === 'list-item' && currentPath && parentNode) {
+    // can't indent if there is only one item in the list
+    if (parentNode.children.length === 1) return;
   
-};
+    // Get the current node's index (for parentNode's children)
+    const currentNodeIndex = currentPath[currentPath.length - 1];
 
-const canUnindentListItem = (editor: CustomEditor) => {
-  const currentPath = getElementPath(editor);
-  return currentPath && currentPath.length > 2;
-}
+    if (parentNode.children.length >= 3 && (currentNodeIndex > 0 && currentNodeIndex < parentNode.children.length - 1)) {
+      // Create Path to the node before the current node
+      const prevNodePath: Path = [...currentPath];
+      prevNodePath[prevNodePath.length - 1] -= 1;
+
+      // Create Path to the node after the current node
+      const nextNodePath: Path = [...currentPath];
+      nextNodePath[nextNodePath.length - 1] += 1;
+
+      // Get previous and next nodes using new Paths
+      const nextNodeItem = getElementNode(editor, nextNodePath);
+      const prevNodeItem = getElementNode(editor, prevNodePath);
+
+      if (isListElement(nextNodeItem) && isListElement(prevNodeItem)) {
+        console.log('merge the PREV and NEXT lists!');
+      } else if (isListElement(nextNodeItem)) {
+        console.log('add to the NEXT list!')
+      } else if (isListElement(prevNodeItem)) {
+        console.log('add to the PREV list!')
+      } else {
+        console.log('wrap list item!')
+      }
+    } else if (currentNodeIndex === 0) {
+      // Create Path to the node after the current node
+      const nextNodePath: Path = [...currentPath];
+      nextNodePath[nextNodePath.length - 1] += 1;
+      // Get next node using new Path
+      const nextNodeItem = getElementNode(editor, nextNodePath);
+
+      if (isListElement(nextNodeItem)) {
+        console.log('add to the NEXT list!')
+      } else {
+        console.log('wrap list item!')
+      }
+    } else if (currentNodeIndex === parentNode.children.length - 1) {
+      // Create Path to the node before the current node
+      const prevNodePath: Path = [...currentPath];
+      prevNodePath[prevNodePath.length - 1] -= 1;
+      // Get previous node using new Paths
+      const prevNodeItem = getElementNode(editor, prevNodePath);
+
+      if (isListElement(prevNodeItem)) {
+        console.log('add to the PREV list!')
+      } else {
+        console.log('wrap list item!')
+      }
+    }
+  }
+};
 
 const unindentListItem = (editor: CustomEditor) => {
   const currentPath = getElementPath(editor);
@@ -58,8 +111,23 @@ const unindentListItem = (editor: CustomEditor) => {
   }
 };
 
+const canUnindentListItem = (editor: CustomEditor): boolean => {
+  const currentPath = getElementPath(editor);
+  return currentPath && currentPath.length > 2 ? true : false;
+}
+
+const canIndentListItem = (editor: CustomEditor): boolean => {
+  const currentNode = getElementNode(editor);
+  const parentNode = getParentElementNode(editor);
+  if (currentNode && currentNode.type === 'list-item' && parentNode) {
+    if (parentNode.children.length > 1) return true;
+  }
+  return false;
+}
+
 export {
   indentListItem,
   canUnindentListItem,
+  canIndentListItem,
   unindentListItem
 }
