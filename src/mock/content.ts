@@ -249,6 +249,18 @@ const LIST_EXAMPLE: CustomElement[] = [
           {
             type: 'list-item',
             children: [
+              { text: 'Peter' },
+            ]
+          },
+          {
+            type: 'list-item',
+            children: [
+              { text: 'Ben' },
+            ]
+          },
+          {
+            type: 'list-item',
+            children: [
               { text: 'Lucas' },
             ]
           },

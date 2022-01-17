@@ -1,21 +1,29 @@
 import { Transforms, Path } from "slate";
 import { getElementPath, getElementNode, getParentElementNode } from "./element";
-import { CustomEditor, CustomElement, ListElement } from "../types";
+import { CustomEditor, CustomElement, ListElement, ListElementType } from "../types";
 
 const isListElement = (element: CustomElement | null): element is ListElement => {
   return element && (element.type === 'unordered-list' || element.type === 'ordered-list') ? true : false;
 }
 
+const focusPath = (editor: CustomEditor, focusPath: Path): void => {
+  editor.selection = {
+    anchor: {
+      path: focusPath,
+      offset: 0
+    },
+    focus: {
+      path: focusPath,
+      offset: 0
+    }
+  };
+};
+
 const indentListItem = (editor: CustomEditor) => { 
   const currentPath = getElementPath(editor);
   const currentNode = getElementNode(editor);
   const parentNode = getParentElementNode(editor);
-  console.log('-------- indentListItem --------', 
-              '\nparentNode:', parentNode, 
-              '\ncurrentNode:', currentNode, 
-              '\ncurrentPath:', currentPath,
-    '\n-------- indentListItem --------');
-  if (currentNode && currentNode.type === 'list-item' && currentPath && parentNode) {
+  if (currentNode && currentNode.type === 'list-item' && currentPath && parentNode && isListElement(parentNode)) {
     // can't indent if there is only one item in the list
     if (parentNode.children.length === 1) return;
   
@@ -36,13 +44,63 @@ const indentListItem = (editor: CustomEditor) => {
       const prevNodeItem = getElementNode(editor, prevNodePath);
 
       if (isListElement(nextNodeItem) && isListElement(prevNodeItem)) {
-        console.log('merge the PREV and NEXT lists!');
+        // Construct node merging previous, current and next nodes
+        const mergedNode: ListElement = {
+          type: prevNodeItem.type,
+          children: [
+            ...prevNodeItem.children,
+            currentNode,
+            ...nextNodeItem.children
+          ]
+        };
+        // Remove old nodes
+        Transforms.removeNodes(editor, { at: prevNodePath });
+        Transforms.removeNodes(editor, { at: prevNodePath });
+        Transforms.removeNodes(editor, { at: prevNodePath });
+        // Insert new node
+        Transforms.insertNodes(editor, mergedNode, { at: prevNodePath });
+        // Focus correct location in new merged node
+        focusPath(editor, [...prevNodePath, prevNodeItem.children.length]);
       } else if (isListElement(nextNodeItem)) {
-        console.log('add to the NEXT list!')
+        const mergedNode: ListElement = {
+          type: nextNodeItem.type,
+          children: [
+            currentNode,
+            ...nextNodeItem.children
+          ]
+        };
+        // Remove old nodes
+        Transforms.removeNodes(editor, { at: currentPath });
+        Transforms.removeNodes(editor, { at: currentPath });
+        // Insert new node
+        Transforms.insertNodes(editor, mergedNode, { at: currentPath });
+        // Focus correct location in new merged node
+        focusPath(editor, [...currentPath, 0]);
       } else if (isListElement(prevNodeItem)) {
-        console.log('add to the PREV list!')
+        const mergedNode: ListElement = {
+          type: prevNodeItem.type,
+          children: [
+            ...prevNodeItem.children,
+            currentNode,
+          ]
+        };
+        // Remove old nodes
+        Transforms.removeNodes(editor, { at: prevNodePath });
+        Transforms.removeNodes(editor, { at: prevNodePath });
+        // Insert new node
+        Transforms.insertNodes(editor, mergedNode, { at: prevNodePath });
+        // Focus correct location in new merged node
+        focusPath(editor, [...prevNodePath, prevNodeItem.children.length]);
       } else {
-        console.log('wrap list item!')
+        const wrappingNode: ListElement = {
+          type: parentNode.type,
+          children: [
+            currentNode
+          ]
+        };
+        Transforms.removeNodes(editor, { at: currentPath });
+        Transforms.insertNodes(editor, wrappingNode, { at: currentPath });
+        focusPath(editor, currentPath);
       }
     } else if (currentNodeIndex === 0) {
       // Create Path to the node after the current node
@@ -52,9 +110,30 @@ const indentListItem = (editor: CustomEditor) => {
       const nextNodeItem = getElementNode(editor, nextNodePath);
 
       if (isListElement(nextNodeItem)) {
-        console.log('add to the NEXT list!')
+        const mergedNode: ListElement = {
+          type: nextNodeItem.type,
+          children: [
+            currentNode,
+            ...nextNodeItem.children
+          ]
+        };
+        // Remove old nodes
+        Transforms.removeNodes(editor, { at: currentPath });
+        Transforms.removeNodes(editor, { at: currentPath });
+        // Insert new node
+        Transforms.insertNodes(editor, mergedNode, { at: currentPath });
+        // Focus correct location in new merged node
+        focusPath(editor, [...currentPath, 0]);
       } else {
-        console.log('wrap list item!')
+        const wrappingNode: ListElement = {
+          type: parentNode.type,
+          children: [
+            currentNode
+          ]
+        };
+        Transforms.removeNodes(editor, { at: currentPath });
+        Transforms.insertNodes(editor, wrappingNode, { at: currentPath });
+        focusPath(editor, currentPath);
       }
     } else if (currentNodeIndex === parentNode.children.length - 1) {
       // Create Path to the node before the current node
@@ -64,13 +143,34 @@ const indentListItem = (editor: CustomEditor) => {
       const prevNodeItem = getElementNode(editor, prevNodePath);
 
       if (isListElement(prevNodeItem)) {
-        console.log('add to the PREV list!')
+        const mergedNode: ListElement = {
+          type: prevNodeItem.type,
+          children: [
+            ...prevNodeItem.children,
+            currentNode,
+          ]
+        };
+        // Remove old nodes
+        Transforms.removeNodes(editor, { at: prevNodePath });
+        Transforms.removeNodes(editor, { at: prevNodePath });
+        // Insert new node
+        Transforms.insertNodes(editor, mergedNode, { at: prevNodePath });
+        // Focus correct location in new merged node
+        focusPath(editor, [...prevNodePath, prevNodeItem.children.length]);
       } else {
-        console.log('wrap list item!')
+        const wrappingNode: ListElement = {
+          type: parentNode.type,
+          children: [
+            currentNode
+          ]
+        };
+        Transforms.removeNodes(editor, { at: currentPath });
+        Transforms.insertNodes(editor, wrappingNode, { at: currentPath });
+        focusPath(editor, currentPath);
       }
     }
   }
-};
+}; 
 
 const unindentListItem = (editor: CustomEditor) => {
   const currentPath = getElementPath(editor);
@@ -98,16 +198,7 @@ const unindentListItem = (editor: CustomEditor) => {
     Transforms.insertNodes(editor, currentNode, { at: parentPath });
 
     // Move selection to the newly inserted node 
-    editor.selection = {
-      anchor: {
-        path: parentPath,
-        offset: 0
-      },
-      focus: {
-        path: parentPath,
-        offset: 0
-      }
-    };
+    focusPath(editor, parentPath);
   }
 };
 

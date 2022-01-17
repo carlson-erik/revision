@@ -1,6 +1,6 @@
-import { ElementType, ListElement, TextLeaf } from '../types';
+import { ElementType, ListElement, ListElementType, TextLeaf } from '../types';
 
-const isList = (elementType: ElementType) => {
+const isList = (elementType: ElementType): elementType is ListElementType => {
   return elementType === 'ordered-list' || elementType === 'unordered-list';
 }
 
