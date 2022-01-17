@@ -208,7 +208,7 @@ const LIST_EXAMPLE: CustomElement[] = [
     type: 'header-three',
     align: 'left',
     children: [
-      { text:'Crazy list:' }
+      { text:'Complex list:' }
     ]
   },
   {

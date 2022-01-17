@@ -11,6 +11,7 @@ import {
   getParentElementNode,
   getParentElementPath,
   isElementTypeActive,
+  isTextElement,
   setElementType,
   isElementFormatActive,
   hasElementFormatValue,
@@ -19,7 +20,10 @@ import {
 
 import {
   indentListItem,
-  outdentListItem
+  outdentListItem,
+  canIndentListItem,
+  canOutdentListItem,
+  isListElement
 } from './list';
 
 export {
@@ -36,11 +40,15 @@ export {
   // Element Type Actions
   isElementTypeActive,
   setElementType,
+  isTextElement,
   // Element Format Actions
   isElementFormatActive,
   hasElementFormatValue,
   setElementFormat,
   // List Actions
   indentListItem,
-  outdentListItem
+  outdentListItem,
+  canIndentListItem,
+  canOutdentListItem,
+  isListElement
 };

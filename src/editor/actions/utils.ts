@@ -1,4 +1,5 @@
-import { ElementType, ListElement, ListElementType, TextElementType, TextLeaf } from '../types';
+import { Path } from 'slate';
+import { CustomEditor, ElementType, ListElement, ListElementType, TextElementType, TextLeaf } from '../types';
 
 const isListElementType = (elementType: ElementType): elementType is ListElementType => {
   return elementType === 'ordered-list' || elementType === 'unordered-list';
@@ -36,8 +37,22 @@ const collectAllTextLeaves = (listElement: ListElement): TextLeaf[] => {
   return listOfLeaves;
 }
 
+const focusPath = (editor: CustomEditor, focusPath: Path): void => {
+  editor.selection = {
+    anchor: {
+      path: focusPath,
+      offset: 0
+    },
+    focus: {
+      path: focusPath,
+      offset: 0
+    }
+  };
+};
+
 export {
   isListElementType,
   isTextElementType,
-  collectAllTextLeaves
+  collectAllTextLeaves,
+  focusPath
 }

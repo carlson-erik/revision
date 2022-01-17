@@ -17,7 +17,9 @@ import {
   getElementNode,
   getParentElementNode,
   indentListItem,
-  outdentListItem
+  outdentListItem,
+  canIndentListItem, 
+  canOutdentListItem
 } from '../actions';
 import { ElementType } from '../types';
 /* -------- Icon Components -------- */
@@ -32,7 +34,6 @@ import Align from './icons/align';
 import List from './icons/list';
 import Indent from './icons/indent';
 import Unindent from './icons/unindent';
-import { canIndentListItem, canOutdentListItem } from '../actions/list';
 
 const elementOptions: Option[] = [
   {

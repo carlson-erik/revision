@@ -57,7 +57,9 @@ export interface ListElement extends Element {
   children: (ListElement | ListItemElement)[];
 }
 
-export type CustomElement = ParagraphElement | HeaderElement | ListElement | ListItemElement;
+export type TextElement = ParagraphElement | HeaderElement;
+
+export type CustomElement = TextElement | ListElement | ListItemElement;
 
 /* -------- Editor -------- */
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;

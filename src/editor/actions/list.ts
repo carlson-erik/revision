@@ -1,23 +1,11 @@
-import { Transforms, Path } from "slate";
+import { Transforms, Path, Descendant } from "slate";
 import { getElementPath, getElementNode, getParentElementNode } from "./element";
 import { CustomEditor, CustomElement, ListElement, ListElementType, ListItemElement } from "../types";
+import { focusPath } from "./utils";
 
-const isListElement = (element: CustomElement | null): element is ListElement => {
-  return element && (element.type === 'unordered-list' || element.type === 'ordered-list') ? true : false;
+const isListElement = (element: Descendant | null): element is ListElement => {
+  return element && "type" in element && (element.type === 'unordered-list' || element.type === 'ordered-list') ? true : false;
 }
-
-const focusPath = (editor: CustomEditor, focusPath: Path): void => {
-  editor.selection = {
-    anchor: {
-      path: focusPath,
-      offset: 0
-    },
-    focus: {
-      path: focusPath,
-      offset: 0
-    }
-  };
-};
 
 const mergeWithPreviousList = (editor: CustomEditor, listPath: Path, listItemNode: ListItemElement, listNode: ListElement) => {
   // Merge list item with the previous list
@@ -248,6 +236,7 @@ const canIndentListItem = (editor: CustomEditor): boolean => {
 }
 
 export {
+  isListElement,
   indentListItem,
   canOutdentListItem,
   canIndentListItem,

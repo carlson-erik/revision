@@ -1,7 +1,11 @@
 import { Editor, Element, Transforms, Path } from 'slate';
-import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, HeaderElement, ListElement, ListElementType, ParagraphElement, TextElementType, TextLeaf } from '../types';
+import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, HeaderElement, ListElement, ListElementType, ParagraphElement, TextElement, TextElementType, TextLeaf } from '../types';
 
 import { isListElementType, collectAllTextLeaves, isTextElementType } from './utils';
+
+const isTextElement = (element: CustomElement | null): element is TextElement => {
+  return element && isTextElementType(element.type) ? true: false;
+}
 
 /* ------------------------ Element Node Actions ------------------------ */
 const getElementNode = (editor: CustomEditor, customPath?: Path): CustomElement | null => {
@@ -174,6 +178,7 @@ export {
   // Element Type Actions
   isElementTypeActive,
   setElementType,
+  isTextElement,
   // Element Format Actions
   isElementFormatActive,
   hasElementFormatValue,
