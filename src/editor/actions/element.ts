@@ -1,7 +1,7 @@
 import { Editor, Element, Transforms, Path } from 'slate';
 import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, HeaderElement, ListElement, ListElementType, ParagraphElement, TextElementType, TextLeaf } from '../types';
 
-import { isList, collectAllTextLeaves } from './utils';
+import { isListElementType, collectAllTextLeaves, isTextElementType } from './utils';
 
 /* ------------------------ Element Node Actions ------------------------ */
 const getElementNode = (editor: CustomEditor, customPath?: Path): CustomElement | null => {
@@ -95,12 +95,12 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
   }
   const path = useParent ? getParentElementPath(editor) : getElementPath(editor);
   if (path && activeElement && activeElement.type !== elementType) {
-    if (isList(elementType) && !isList(activeElement.type)) {
+    if (isListElementType(elementType) && !isListElementType(activeElement.type)) {
       /*
        * case: converting to list element from existing text element 
       */
       const listElement: ListElement = {
-        type: elementType as ListElementType,
+        type: elementType,
         children: [
           {
             type: 'list-item',
@@ -114,19 +114,19 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
       Transforms.removeNodes(editor, { at: path });
       // Insert new List Element
       Transforms.insertNodes(editor, listElement, { at: path });
-    } else if (isList(elementType) && isList(activeElement.type)) {
+    } else if (isListElementType(elementType) && isListElementType(activeElement.type)) {
       /*
        * case: changing list element types in an already existing list element structure
       */
       Transforms.setNodes(editor, { type: elementType }, { at: path });
-    } else if (!isList(elementType) && isList(activeElement.type)) {
+    } else if (isTextElementType(elementType) && isListElementType(activeElement.type)) {
       /*
        * case: Collapsing list structure into text element.
       */
       const rootElement = getElementNode(editor, [path[0]]);
       const allTextLeaves: TextLeaf[] = collectAllTextLeaves(rootElement as ListElement);
       const textElement: HeaderElement | ParagraphElement = {
-        type: elementType as TextElementType,
+        type: elementType,
         align: 'left',
         children: [
           ...allTextLeaves

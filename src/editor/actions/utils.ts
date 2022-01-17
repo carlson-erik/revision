@@ -1,7 +1,22 @@
-import { ElementType, ListElement, ListElementType, TextLeaf } from '../types';
+import { ElementType, ListElement, ListElementType, TextElementType, TextLeaf } from '../types';
 
-const isList = (elementType: ElementType): elementType is ListElementType => {
+const isListElementType = (elementType: ElementType): elementType is ListElementType => {
   return elementType === 'ordered-list' || elementType === 'unordered-list';
+}
+
+const isTextElementType = (elementType: ElementType): elementType is TextElementType => {
+  switch(elementType){
+    case 'header-one':
+    case 'header-two':
+    case 'header-three':
+    case 'header-four':
+    case 'header-five':
+    case 'header-six':
+    case 'paragraph':
+      return true;
+    default:
+      return false;
+  }
 }
 
 const collectAllTextLeaves = (listElement: ListElement): TextLeaf[] => {
@@ -22,6 +37,7 @@ const collectAllTextLeaves = (listElement: ListElement): TextLeaf[] => {
 }
 
 export {
-  isList,
+  isListElementType,
+  isTextElementType,
   collectAllTextLeaves
 }
