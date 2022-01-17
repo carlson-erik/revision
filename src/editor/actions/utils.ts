@@ -1,4 +1,5 @@
-import { Path } from 'slate';
+import { Path, Transforms } from 'slate';
+import { ReactEditor } from 'slate-react';
 import { CustomEditor, ElementType, ListElement, ListElementType, TextElementType, TextLeaf } from '../types';
 
 const isListElementType = (elementType: ElementType): elementType is ListElementType => {
@@ -38,7 +39,8 @@ const collectAllTextLeaves = (listElement: ListElement): TextLeaf[] => {
 }
 
 const focusPath = (editor: CustomEditor, focusPath: Path): void => {
-  editor.selection = {
+  ReactEditor.focus(editor);
+  Transforms.select(editor, {
     anchor: {
       path: focusPath,
       offset: 0
@@ -47,7 +49,7 @@ const focusPath = (editor: CustomEditor, focusPath: Path): void => {
       path: focusPath,
       offset: 0
     }
-  };
+  });
 };
 
 export {

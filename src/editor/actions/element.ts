@@ -1,7 +1,7 @@
 import { Editor, Element, Transforms, Path } from 'slate';
-import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, HeaderElement, ListElement, ListElementType, ParagraphElement, TextElement, TextElementType, TextLeaf } from '../types';
+import { Alignment, CustomEditor, CustomElement, ElementFormat, ElementType, ListElement, TextElement, TextLeaf } from '../types';
 
-import { isListElementType, collectAllTextLeaves, isTextElementType } from './utils';
+import { isListElementType, collectAllTextLeaves, isTextElementType, focusPath } from './utils';
 
 const isTextElement = (element: CustomElement | null): element is TextElement => {
   return element && isTextElementType(element.type) ? true: false;
@@ -118,6 +118,8 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
       Transforms.removeNodes(editor, { at: path });
       // Insert new List Element
       Transforms.insertNodes(editor, listElement, { at: path });
+      // Focus new List element
+      focusPath(editor, path);
     } else if (isListElementType(elementType) && isListElementType(activeElement.type)) {
       /*
        * case: changing list element types in an already existing list element structure
@@ -129,7 +131,7 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
       */
       const rootElement = getElementNode(editor, [path[0]]);
       const allTextLeaves: TextLeaf[] = collectAllTextLeaves(rootElement as ListElement);
-      const textElement: HeaderElement | ParagraphElement = {
+      const textElement: TextElement = {
         type: elementType,
         align: 'left',
         children: [
@@ -140,6 +142,8 @@ const setElementType = (editor: CustomEditor, elementType: ElementType): void =>
       Transforms.removeNodes(editor, { at: [path[0]] });
       // Insert new Text Element
       Transforms.insertNodes(editor, textElement, { at: [path[0]] });
+      // Focus new Text element
+      focusPath(editor, [path[0]])
     } else {
       /*
        * case: changing text element types in an already existing text element structure
