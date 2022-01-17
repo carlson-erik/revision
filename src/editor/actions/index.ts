@@ -19,7 +19,7 @@ import {
 
 import {
   indentListItem,
-  unindentListItem
+  outdentListItem
 } from './list';
 
 export {
@@ -42,5 +42,5 @@ export {
   setElementFormat,
   // List Actions
   indentListItem,
-  unindentListItem
+  outdentListItem
 };

@@ -17,7 +17,7 @@ import {
   getElementNode,
   getParentElementNode,
   indentListItem,
-  unindentListItem
+  outdentListItem
 } from '../actions';
 import { ElementType } from '../types';
 /* -------- Icon Components -------- */
@@ -32,7 +32,7 @@ import Align from './icons/align';
 import List from './icons/list';
 import Indent from './icons/indent';
 import Unindent from './icons/unindent';
-import { canIndentListItem, canUnindentListItem } from '../actions/list';
+import { canIndentListItem, canOutdentListItem } from '../actions/list';
 
 const elementOptions: Option[] = [
   {
@@ -324,11 +324,11 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                         <Indent color='black' />
                       </Button>
                     ) : null}
-                    {canUnindentListItem(editor) ? (
+                    {canOutdentListItem(editor) ? (
                       <Button
                         onMouseDown={(event) => {
                           event.preventDefault();
-                          unindentListItem(editor);
+                          outdentListItem(editor);
                         }}
                       >
                         <Unindent color='black' />

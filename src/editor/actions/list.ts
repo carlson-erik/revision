@@ -19,7 +19,7 @@ const focusPath = (editor: CustomEditor, focusPath: Path): void => {
   };
 };
 
-const mergeWithPreviousNode = (editor: CustomEditor, listPath: Path, listItemNode: ListItemElement, listNode: ListElement) => {
+const mergeWithPreviousList = (editor: CustomEditor, listPath: Path, listItemNode: ListItemElement, listNode: ListElement) => {
   // Merge list item with the previous list
   const mergedNode: ListElement = {
     type: listNode.type,
@@ -37,7 +37,7 @@ const mergeWithPreviousNode = (editor: CustomEditor, listPath: Path, listItemNod
   focusPath(editor, [...listPath, listNode.children.length]);
 };
 
-const mergeWithNextNode = (editor: CustomEditor, listItemPath: Path, listItemNode: ListItemElement, listNode: ListElement) => {
+const mergeWithNextList = (editor: CustomEditor, listItemPath: Path, listItemNode: ListItemElement, listNode: ListElement) => {
   // Merge list item with the following list
   const mergedNode: ListElement = {
     type: listNode.type,
@@ -55,7 +55,27 @@ const mergeWithNextNode = (editor: CustomEditor, listItemPath: Path, listItemNod
   focusPath(editor, [...listItemPath, 0]);
 };
 
-const wrapNode = (editor: CustomEditor, path: Path, node: ListItemElement, listType: ListElementType) => {
+const mergeTwoLists = (editor: CustomEditor, currentListItem: ListItemElement, prevListPath: Path, prevList: ListElement, nextList: ListElement) => {
+  // Construct node merging previous, current and next nodes
+  const mergedNode: ListElement = {
+    type: prevList.type,
+    children: [
+      ...prevList.children,
+      currentListItem,
+      ...nextList.children
+    ]
+  };
+  // Remove old nodes
+  Transforms.removeNodes(editor, { at: prevListPath });
+  Transforms.removeNodes(editor, { at: prevListPath });
+  Transforms.removeNodes(editor, { at: prevListPath });
+  // Insert new node
+  Transforms.insertNodes(editor, mergedNode, { at: prevListPath });
+  // Focus correct location in new merged node
+  focusPath(editor, [...prevListPath, prevList.children.length]);
+}
+
+const wrapListItem = (editor: CustomEditor, path: Path, node: ListItemElement, listType: ListElementType) => {
   // Wrap current list item node with a list node
   const listNode: ListElement = {
     type: listType,
@@ -68,14 +88,14 @@ const wrapNode = (editor: CustomEditor, path: Path, node: ListItemElement, listT
   focusPath(editor, path);
 };
 
-const indentListItem = (editor: CustomEditor) => { 
+const indentListItem = (editor: CustomEditor) => {
   const currentPath = getElementPath(editor);
   const currentNode = getElementNode(editor);
   const parentNode = getParentElementNode(editor);
   if (currentNode && currentNode.type === 'list-item' && currentPath && parentNode && isListElement(parentNode)) {
     // can't indent if there is only one item in the list
     if (parentNode.children.length === 1) return;
-  
+
     // Get the current node's index (for parentNode's children)
     const currentNodeIndex = currentPath[currentPath.length - 1];
 
@@ -93,29 +113,13 @@ const indentListItem = (editor: CustomEditor) => {
       const prevNodeItem = getElementNode(editor, prevNodePath);
 
       if (isListElement(nextNodeItem) && isListElement(prevNodeItem)) {
-        // Construct node merging previous, current and next nodes
-        const mergedNode: ListElement = {
-          type: prevNodeItem.type,
-          children: [
-            ...prevNodeItem.children,
-            currentNode,
-            ...nextNodeItem.children
-          ]
-        };
-        // Remove old nodes
-        Transforms.removeNodes(editor, { at: prevNodePath });
-        Transforms.removeNodes(editor, { at: prevNodePath });
-        Transforms.removeNodes(editor, { at: prevNodePath });
-        // Insert new node
-        Transforms.insertNodes(editor, mergedNode, { at: prevNodePath });
-        // Focus correct location in new merged node
-        focusPath(editor, [...prevNodePath, prevNodeItem.children.length]);
+        mergeTwoLists(editor, currentNode, prevNodePath, prevNodeItem, nextNodeItem)
       } else if (isListElement(nextNodeItem)) {
-        mergeWithNextNode(editor, currentPath, currentNode, nextNodeItem);
+        mergeWithNextList(editor, currentPath, currentNode, nextNodeItem);
       } else if (isListElement(prevNodeItem)) {
-        mergeWithPreviousNode(editor, prevNodePath, currentNode, prevNodeItem);
+        mergeWithPreviousList(editor, prevNodePath, currentNode, prevNodeItem);
       } else {
-        wrapNode(editor, currentPath, currentNode, parentNode.type);
+        wrapListItem(editor, currentPath, currentNode, parentNode.type);
       }
     } else if (currentNodeIndex === 0) {
       // Create Path to the node after the current node
@@ -125,9 +129,9 @@ const indentListItem = (editor: CustomEditor) => {
       const nextNodeItem = getElementNode(editor, nextNodePath);
 
       if (isListElement(nextNodeItem)) {
-        mergeWithNextNode(editor, currentPath, currentNode, nextNodeItem);
+        mergeWithNextList(editor, currentPath, currentNode, nextNodeItem);
       } else {
-        wrapNode(editor, currentPath, currentNode, parentNode.type);
+        wrapListItem(editor, currentPath, currentNode, parentNode.type);
       }
     } else if (currentNodeIndex === parentNode.children.length - 1) {
       // Create Path to the node before the current node
@@ -137,61 +141,115 @@ const indentListItem = (editor: CustomEditor) => {
       const prevNodeItem = getElementNode(editor, prevNodePath);
 
       if (isListElement(prevNodeItem)) {
-        mergeWithPreviousNode(editor, prevNodePath, currentNode, prevNodeItem);
+        mergeWithPreviousList(editor, prevNodePath, currentNode, prevNodeItem);
       } else {
-        wrapNode(editor, currentPath, currentNode, parentNode.type);
+        wrapListItem(editor, currentPath, currentNode, parentNode.type);
       }
     }
   }
-}; 
+};
 
-const unindentListItem = (editor: CustomEditor) => {
+const outdentListItem = (editor: CustomEditor) => {
   const currentPath = getElementPath(editor);
   const currentNode = getElementNode(editor);
-  
-
-  if(currentNode && currentPath && currentPath.length > 2) {
-    // For the Parent node, get the Path and Node
-    const parentNode = getParentElementNode(editor);
-    const parentPath = [...currentPath].slice(0, currentPath.length - 1);
-
-    // If we're the only list-item in this list, remove the old list.
-    if(parentNode?.children.length === 1) {
+  const parentNode = getParentElementNode(editor);
+  if (parentNode && isListElement(parentNode) && currentNode && currentPath && currentPath.length > 2) {
+    let insertPath = [...currentPath].slice(0, currentPath.length - 1);
+    const currentNodeIndex = currentPath[currentPath.length - 1];
+    if (parentNode.children.length === 1) {
+      /*
+      * case: The user unindents the last item in a list. The list item's parent node should be 
+      *       removed and this list item should be inserted in its place.
+      */
       currentPath.pop();
+      // Remove old node at currentPath
+      Transforms.removeNodes(editor, { at: currentPath });
+      // Insert into new location
+      Transforms.insertNodes(editor, currentNode, { at: insertPath });
+      // Move selection to the newly inserted node 
+      focusPath(editor, insertPath);
+    } else if (currentNodeIndex > 0 && currentNodeIndex < parentNode.children.length - 1) {
+      /*
+      * case: List item is in the middle of a multi-item list and a user unindents. The list should be split
+      *       rather than moving the list item below/above the current list.
+      */
+      // Create lists without the current list item
+      const prevList: ListElement = {
+        type: parentNode.type,
+        children: parentNode.children.slice(0, currentNodeIndex)
+      }
+      const nextList: ListElement = {
+        type: parentNode.type,
+        children: parentNode.children.slice(currentNodeIndex+1, parentNode.children.length)
+      }
+      
+      // Removes the whole list
+      Transforms.removeNodes(editor, { at: insertPath });
+
+      // Insert all nodes in reverse order
+      Transforms.insertNodes( editor, nextList, { at: insertPath });
+      Transforms.insertNodes( editor, currentNode, { at: insertPath });
+      Transforms.insertNodes( editor, prevList, { at: insertPath });
+
+      insertPath[insertPath.length-1] += 1;
+
+      focusPath(editor, insertPath);
+      
+    } else if (currentNodeIndex === 0) {
+      /*
+      * case: List item is at the beginning of a multi-item list and a user unindents. The list 
+      *       show move above the current list.
+      */
+      // Remove old node at currentPath
+      Transforms.removeNodes(editor, { at: currentPath });
+      // Insert into new location
+      Transforms.insertNodes(editor, currentNode, { at: insertPath });
+      // Move selection to the newly inserted node 
+      focusPath(editor, insertPath);
+    } else if (currentNodeIndex === parentNode.children.length - 1) {
+      /*
+      * case: List item is at the ending of a multi-item list and a user unindents. The list 
+      *       show move below the current list.
+      */
+      insertPath[insertPath.length - 1] += 1;
+      // Remove old node at currentPath
+      Transforms.removeNodes(editor, { at: currentPath });
+      // Insert into new location
+      Transforms.insertNodes(editor, currentNode, { at: insertPath });
+      // Move selection to the newly inserted node 
+      focusPath(editor, insertPath);
     }
-
-    /*
-     * TODO: I need to handle the case where a list item is the last 
-    */
-
-    // Remove old node at currentPath
-    Transforms.removeNodes(editor, { at: currentPath });
-
-    // Insert into new location
-    Transforms.insertNodes(editor, currentNode, { at: parentPath });
-
-    // Move selection to the newly inserted node 
-    focusPath(editor, parentPath);
   }
 };
 
-const canUnindentListItem = (editor: CustomEditor): boolean => {
+const canOutdentListItem = (editor: CustomEditor): boolean => {
   const currentPath = getElementPath(editor);
   return currentPath && currentPath.length > 2 ? true : false;
 }
 
 const canIndentListItem = (editor: CustomEditor): boolean => {
   const currentNode = getElementNode(editor);
+  const currentPath = getElementPath(editor);
   const parentNode = getParentElementNode(editor);
-  if (currentNode && currentNode.type === 'list-item' && parentNode) {
-    if (parentNode.children.length > 1) return true;
+  if (currentPath && currentNode && currentNode.type === 'list-item' && parentNode) {
+    const currentNodeIndex = currentPath[currentPath.length-1];
+    const nextNode = parentNode.children[currentNodeIndex+1];
+    /*
+     * User can indent in the following cases:
+     *   1. list item is in a multi-item list
+     *   2. list item isn't the first item in a list
+     *   3. list item isn't the list item before a sub-list
+    */
+    if (parentNode.children.length > 1 && currentNodeIndex !== 0 && !(currentNodeIndex === 0 && nextNode && 'type' in nextNode && isListElement(nextNode))) {
+      return true;
+    }
   }
   return false;
 }
 
 export {
   indentListItem,
-  canUnindentListItem,
+  canOutdentListItem,
   canIndentListItem,
-  unindentListItem
+  outdentListItem
 }
