@@ -1,45 +1,49 @@
-import { Fragment, ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { useSlate } from 'slate-react';
 /* -------- Components -------- */
 import Popper from './popper';
 /* -------- Editor Actions -------- */
-import { getElementBlockType } from '../actions';
+import { getElementNode, getParentElementNode } from '../../actions';
 /* -------- Types -------- */
 import { CustomEditor } from '../../types';
 /* -------- Icons -------- */
 import Chevron from '../icons/chevron';
 
-const Container = styled.div`
-  width: 100%;
+const Container = styled.div<{ disabled: boolean}>`
+  width: 9rem;
   height: 100%;
   display: flex;
-  width: 9rem;
   border: 1px solid #E5E8EC;
-  margin-right: 4px;
+
+  background-color: ${props => props.disabled ? '#EFF2F4' : '#FFFFFF'};
 `;
-const SelectedValue = styled.div`
-  height: 100%;
+
+const SelectedValue = styled.div<{ disabled: boolean}>`
+  height: 2rem;
   flex-grow: 1;
   display: flex;
   align-items: center;
   padding-left: 0.5rem;
-  color: #52555F;
+  color: #;
   cursor: default;
-  font-size: 14px;
+  font-size: 12px;
 
+  color: ${props => props.disabled ? '#7C818B' : '#343740'};
+  
   & svg {
     padding-right: 0.5rem;
   }
 `;
 
-const IconContainer = styled.div`
+const IconContainer = styled.div<{ disabled: boolean}>`
   height: 2rem;
   width: 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #52555F;
+
+  color: ${props => props.disabled ? '#7C818B' : '#343740'};
 `;
 
 const OLContainer = styled.ul`
@@ -58,7 +62,7 @@ const OptionListItem = styled.li<{ selected: boolean; }>`
   align-items: center;
   color: ${'#52555F'};
   cursor: default;
-  font-size: 14px;
+  font-size: 12px;
 
   &:hover {
     background-color: #D1D4D9;
@@ -93,15 +97,13 @@ const OptionsList = (props:OptionsListProps) => {
           <OptionListItem 
             key={option.value} 
             selected={selectedOption && selectedOption.value === option.value ? true : false} 
-            onClick={() => {
+            onMouseDown={() => {
               onChange(option);
               onClose();
             }}
           >
-            {option.icon ? (
-              <IconContainer>
-                {option.icon}
-              </IconContainer>
+            {option?.icon ? (
+              option.icon
               ) : null}
             {option.label}
           </OptionListItem>
@@ -111,56 +113,60 @@ const OptionsList = (props:OptionsListProps) => {
   )
 }
 
-const getCurrentOption = (editor:CustomEditor, options: Option[]) => {
-  const blockType = getElementBlockType(editor);
-
-  // if we have a block type, get the needed display details (icon, label, etc)
-  if(blockType !== null)
-    return options.filter(option => option.value === blockType)[0];
-
-  // no blockType selected, return null
+// Gets the active element and as long as it exists, we find the current Element
+const getCurrentOption = (editor:CustomEditor, options: Option[]): Option | null => {
+  let activeElement = getElementNode(editor);
+  if(activeElement?.type === 'list-item') {
+    activeElement = getParentElementNode(editor);
+  }
+  if(activeElement !== null) {
+    return options.filter(option => option.value === activeElement?.type)[0];
+  }
   return null;
 }
 
 interface DropdownProps {
   options: Option[];
+  allOptions: Option[];
   placeholder: string;
+  disabled?: boolean;
   onChange: (value:Option) => void;
 }
 
 const Dropdown = (props: DropdownProps) => {
-  const { options, placeholder, onChange } = props;
+  const { options, allOptions, placeholder, onChange, disabled=false } = props;
   const editor = useSlate();
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const onClose = () => setIsOpen(false);
-  const selectedOption: Option |  null = getCurrentOption(editor, options);
+  const selectedOption: Option |  null = getCurrentOption(editor, allOptions);
   const placeholder_text: string = placeholder && placeholder !== '' ? placeholder : '';
 
   return (
     <>
       <Container 
         onClick={() => {
-          setIsOpen(!isOpen);
+          if(!disabled) {
+            setIsOpen(!isOpen);
+          }
         }} 
+        disabled={disabled}
         ref={setContainerRef}>
-        <SelectedValue>
-          {selectedOption !== null ? (
-            <Fragment>
+        <SelectedValue disabled={disabled}>
+          {selectedOption !== null && !disabled ? (
+            <>
               {selectedOption.icon ? (
-                <IconContainer>
-                  {selectedOption.icon}
-                </IconContainer>
+                selectedOption.icon
                 ) : null}
               {selectedOption.label}
-            </Fragment>
+            </>
           ) : placeholder_text}
         </SelectedValue>
-        <IconContainer>
+        <IconContainer disabled={disabled}>
           { isOpen ? (
-            <Chevron size='small' color='#52555F' direction='down'/>
+            <Chevron size='small' color='#343740' direction='down'/>
           ): (
-            <Chevron size='small' color='#52555F' direction='up'/>
+            <Chevron size='small' color='#343740' direction='up'/>
           )}
         </IconContainer>
       </Container>

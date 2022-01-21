@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {RenderLeafProps} from 'slate-react';
+import { RenderLeafProps } from 'slate-react';
 
 const LeafSpan = styled.span<{
   bold?: boolean;

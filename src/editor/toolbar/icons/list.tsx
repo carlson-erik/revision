@@ -10,8 +10,6 @@ export default function List(props: ListProps) {
   const { color, ordered, size = 'large' } = props;
   let viewBox, svgContent;
 
-  console.log('list ordered: ', ordered)
-
   if( ordered ) {
     viewBox = '-5 -6 24 24';
     svgContent = (

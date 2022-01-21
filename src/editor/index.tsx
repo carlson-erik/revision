@@ -1,19 +1,23 @@
-import { useMemo, useState, KeyboardEvent } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { createEditor } from 'slate';
+import { createEditor, Descendant, Transforms } from 'slate';
 import { Slate, Editable, withReact, RenderLeafProps, RenderElementProps } from 'slate-react';
 import { withHistory } from 'slate-history';
 /* -------- Types -------- */
-import { CustomEditor, CustomElement } from './types';
+import { CustomEditor, CustomElement, ParagraphElement } from './types';
 /* -------- Editor Components -------- */
-import TextLeaf from './elements/text-leaf';
+import TextLeaf from './leaves/text';
 import DefaultElement from './elements/';
 import HeaderElement from './elements/header';
+import ListElement from './elements/list';
+import ListItemElement from './elements/list-item'
 import HoveringToolbar from './toolbar';
+/* -------- Editor Actions -------- */
+import { canIndentListItem, canOutdentListItem, getElementNode, getElementPath, indentListItem, isListElement, isTextElement, outdentListItem } from './actions';
+import { focusPath } from './actions/utils';
 
 const Container = styled.div`
   padding: 1rem;
-  margin: 2rem;
   border: 1px solid gray;
 
   /* Box sizing rules */
@@ -21,12 +25,6 @@ const Container = styled.div`
   & *::before,
   & *::after {
     box-sizing: border-box;
-  }
-
-  /* Remove default padding */
-  & ul[class],
-  & ol[class] {
-    padding: 0;
   }
 
   /* Remove default margin */
@@ -42,12 +40,6 @@ const Container = styled.div`
   & dl,
   & dd {
     margin: 0;
-  }
-
-  /* Remove list styles on ul, ol elements with a class attribute */
-  & ul[class],
-  & ol[class] {
-    list-style: none;
   }
 
   /* A elements that don't have a class get default styles */
@@ -114,6 +106,11 @@ const renderElement = (props: RenderElementProps) => {
     case 'header-five':
     case 'header-six':
       return <HeaderElement {...props} />;
+    case 'ordered-list':
+    case 'bulleted-list':
+      return <ListElement {...props} />;
+    case 'list-item':
+      return <ListItemElement {...props} />;
     default:
       return <DefaultElement {...props} />
   }
@@ -130,24 +127,66 @@ export interface EditorProps {
 
 const Editor = (props: EditorProps) => {
   const { readOnly, content } = props;
+  const [containerRef, setContainerRef]= useState< HTMLElement | null>(null);
   const editor: CustomEditor = useMemo(() => withHistory(withReact(createEditor())), []);
   const [editorContent, setEditorContent] = useState<CustomElement[]>(content ? content : EMPTY_DOCUMENT);
+
+  const onChangeHandler = (value: Descendant[]) => {
+    setEditorContent(value as CustomElement[])
+  }
+
+  const onKeydownHandler = (event: any) => {
+    const currentNode = getElementNode(editor);
+    const currentPath = getElementPath(editor);
+    if(currentNode && currentPath){ 
+      const currentNodeIndex = currentPath[0];
+      if(event.key === 'Enter' && currentNode.type === 'list-item' && currentNode.children[0].text === '') {
+        // This prevents the user from creating more than one empty list item in any given list.
+        event.preventDefault();
+        if(currentPath.length === 2) {
+          // This implies the user is ending a top-level list and moving back to text content. So, we add
+          // a empty paragraph after the list and shift focus to it.
+          Transforms.insertNodes(editor, { type:'paragraph', align:'left', children:[{text:''}]}, { at:[currentPath[0]+1] })
+          focusPath(editor, [currentPath[0]+1]);
+        }
+      } else if(event.key === 'Backspace' && isTextElement(currentNode) && currentNodeIndex > 0 && currentNode.children[0].text === '') {
+        // Original behavior wasn't great in this case. When deleting an empty Text Element and then switching focus to a 
+        // list in the previous node, we correctly shift selection to be the very last list item in the top level list.
+        // NOTE: We will have to account for all future new top level Element types here to prevent said not great behavior.
+        event.preventDefault();
+        Transforms.removeNodes(editor, { at: currentPath})
+        const listElement = editor.children[currentNodeIndex-1];
+        if(isListElement(listElement)) {
+          focusPath(editor, [currentNodeIndex-1, listElement.children.length-1, 0])
+        }
+      } else if( event.key === 'Tab' && currentNode.type === 'list-item' && !event.shiftKey) {
+        // This enables a user to indent the current list item with their keyboard
+        event.preventDefault();
+        if(canIndentListItem(editor)){
+          indentListItem(editor);
+        }
+      } else if( event.key === 'Tab' && currentNode.type === 'list-item' && event.shiftKey) {
+        // This enables a user to outdent the current list item with their keyboard
+        event.preventDefault();
+        if(canOutdentListItem(editor)){
+          outdentListItem(editor);
+        }
+      }
+    }
+  }
   return (
-    <Container>
+    <Container className='rt-editor' ref={setContainerRef}>
       <Slate
         editor={editor}
         value={editorContent}
-        onChange={(value) => setEditorContent(value as CustomElement[])}
+        onChange={onChangeHandler}
       >
-        <HoveringToolbar />
+        {containerRef ? <HoveringToolbar containerRef={containerRef} /> : null}
         <Editable
           readOnly={readOnly}
           renderLeaf={renderLeaf}
           renderElement={renderElement}
-          onBlur={() => {
-            // update blurSelection with last selection before click out
-            editor.blurSelection = editor.selection;
-          }}
+          onKeyDown={onKeydownHandler}
         />
       </Slate>
     </Container>
