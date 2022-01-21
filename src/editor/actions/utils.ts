@@ -3,7 +3,7 @@ import { ReactEditor } from 'slate-react';
 import { CustomEditor, ElementType, ListElement, ListElementType, TextElementType, TextLeaf } from '../types';
 
 const isListElementType = (elementType: ElementType): elementType is ListElementType => {
-  return elementType === 'ordered-list' || elementType === 'unordered-list';
+  return elementType === 'ordered-list' || elementType === 'bulleted-list';
 }
 
 const isTextElementType = (elementType: ElementType): elementType is TextElementType => {
@@ -27,7 +27,7 @@ const collectAllTextLeaves = (listElement: ListElement): TextLeaf[] => {
 
   for (let index = 0; index < children.length; index++) {
     const element = children[index];
-    if(element.type === 'ordered-list' || element.type === 'unordered-list') {
+    if(element.type === 'ordered-list' || element.type === 'bulleted-list') {
       listOfLeaves.push(...collectAllTextLeaves(element))
     } else {
       // list-item things

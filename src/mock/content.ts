@@ -97,7 +97,7 @@ const HANSEL_AND_GRETEL: CustomElement[] = [
   }
 ];
 
-const LIST_EXAMPLE: CustomElement[] = [
+const LIST_EXAMPLES: CustomElement[] = [
   {
     type: 'header-one',
     align: 'left',
@@ -177,11 +177,11 @@ const LIST_EXAMPLE: CustomElement[] = [
     type: 'header-three',
     align: 'left',
     children: [
-      { text:'Unordered list:' }
+      { text:'Bulleted list:' }
     ]
   },
   {
-    type: 'unordered-list',
+    type: 'bulleted-list',
     children: [
       {
         type: 'list-item',
@@ -212,7 +212,7 @@ const LIST_EXAMPLE: CustomElement[] = [
     ]
   },
   {
-    type: 'unordered-list',
+    type: 'bulleted-list',
     children: [
       {
         type: 'list-item',
@@ -236,12 +236,12 @@ const LIST_EXAMPLE: CustomElement[] = [
             ]
           },
           {
-            type: 'unordered-list',
+            type: 'bulleted-list',
             children: [
               {
                 type: 'list-item',
                 children: [
-                  { text: 'Aaron' },
+                  { text: 'Nathan' },
                 ]
               }
             ]
@@ -265,7 +265,7 @@ const LIST_EXAMPLE: CustomElement[] = [
             ]
           },
           {
-            type: 'unordered-list',
+            type: 'bulleted-list',
             children: [
               {
                 type: 'list-item',
@@ -298,7 +298,7 @@ const LIST_EXAMPLE: CustomElement[] = [
       {
         type: 'list-item',
         children: [
-          { text: 'Andrew' },
+          { text: 'Matthew' },
         ]
       },
     ]
@@ -308,5 +308,5 @@ const LIST_EXAMPLE: CustomElement[] = [
 export {
   LOREM_IPSUM,
   HANSEL_AND_GRETEL,
-  LIST_EXAMPLE
+  LIST_EXAMPLES
 }

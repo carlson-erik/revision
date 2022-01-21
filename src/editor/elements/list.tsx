@@ -1,25 +1,25 @@
 import { RenderElementProps } from 'slate-react';
 import styled from 'styled-components';
 
-const OrderedElement = styled.ol``;
-const UnorderedElement = styled.ul``;
+const OrderedList = styled.ol``;
+const BulletedList = styled.ul``;
 
 const ListElement = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
   const { type } = element;
 
-  let ElementType;
+  let ListType;
 
   if(type === 'ordered-list') {
-    ElementType = OrderedElement;
+    ListType = OrderedList;
   } else {
-    ElementType = UnorderedElement;
+    ListType = BulletedList;
   }
 
   return (
-    <ElementType {...attributes} >
+    <ListType {...attributes} >
       {children}
-    </ElementType>
+    </ListType>
   )
 }
 

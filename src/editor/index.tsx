@@ -107,7 +107,7 @@ const renderElement = (props: RenderElementProps) => {
     case 'header-six':
       return <HeaderElement {...props} />;
     case 'ordered-list':
-    case 'unordered-list':
+    case 'bulleted-list':
       return <ListElement {...props} />;
     case 'list-item':
       return <ListItemElement {...props} />;
@@ -174,7 +174,6 @@ const Editor = (props: EditorProps) => {
       }
     }
   }
-13
   return (
     <Container className='rt-editor' ref={setContainerRef}>
       <Slate

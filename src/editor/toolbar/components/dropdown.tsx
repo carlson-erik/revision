@@ -32,7 +32,7 @@ const SelectedValue = styled.div<{ disabled: boolean}>`
   color: ${props => props.disabled ? '#7C818B' : '#343740'};
   
   & svg {
-    padding-right: 0.25rem;
+    padding-right: 0.5rem;
   }
 `;
 
@@ -69,7 +69,7 @@ const OptionListItem = styled.li<{ selected: boolean; }>`
   }
 
   & svg {
-    padding-right: 0.25rem;
+    padding-right: 0.5rem;
   }
 
   ${props => props.selected ? 'background-color: #D1D4D9;' : ''}

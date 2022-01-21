@@ -4,7 +4,7 @@ import { CustomEditor, CustomElement, ListElement, ListElementType, ListItemElem
 import { focusPath } from "./utils";
 
 const isListElement = (element: Descendant | null): element is ListElement => {
-  return element && "type" in element && (element.type === 'unordered-list' || element.type === 'ordered-list') ? true : false;
+  return element && "type" in element && (element.type === 'bulleted-list' || element.type === 'ordered-list') ? true : false;
 }
 
 const mergeWithPreviousList = (editor: CustomEditor, listPath: Path, listItemNode: ListItemElement, listNode: ListElement) => {

@@ -1,7 +1,7 @@
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { withKnobs, boolean } from '@storybook/addon-knobs';
 import Editor, { EditorProps } from '../editor';
-import { LOREM_IPSUM, HANSEL_AND_GRETEL, LIST_EXAMPLE } from '../mock/content';
+import { LOREM_IPSUM, HANSEL_AND_GRETEL, LIST_EXAMPLES } from '../mock/content';
 import styled from 'styled-components';
 import './index.css';
 
@@ -46,7 +46,7 @@ HanselAndGretel.args = {
   content: HANSEL_AND_GRETEL
 };
 
-export const ListExample = EditorTemplate.bind({});
-ListExample.args = {
-  content: LIST_EXAMPLE
+export const ListExamples = EditorTemplate.bind({});
+ListExamples.args = {
+  content: LIST_EXAMPLES
 };

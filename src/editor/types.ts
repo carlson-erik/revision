@@ -6,7 +6,7 @@ import { HistoryEditor } from 'slate-history';
 
 export type HeaderElementType = 'header-one' | 'header-two' | 'header-three' | 'header-four' | 'header-five' | 'header-six';
 
-export type ListElementType = 'ordered-list' | 'unordered-list';
+export type ListElementType = 'ordered-list' | 'bulleted-list';
 
 export type TextElementType = 'paragraph' | HeaderElementType;
 

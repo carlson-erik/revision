@@ -97,8 +97,8 @@ const allElementOptions: Option[] = [
     )
   },
   {
-    label: 'Unordered List',
-    value: 'unordered-list',
+    label: 'Bulleted List',
+    value: 'bulleted-list',
     icon: (
       <List color='#343740' />
     )
@@ -252,7 +252,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                   }}
                 />
               </ToolbarSection>
-              {(activeElement?.type !== 'ordered-list') && (activeElement?.type !== 'unordered-list') && (activeElement?.type !== 'list-item')
+              {(activeElement?.type !== 'ordered-list') && (activeElement?.type !== 'bulleted-list') && (activeElement?.type !== 'list-item')
                 ? (
                   <>
                     <ToolbarSection>
@@ -305,10 +305,10 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
                 <List ordered={true} color='black' />
               </Button>
               <Button
-                active={activeElementParent?.type === 'unordered-list'}
+                active={activeElementParent?.type === 'bulleted-list'}
                 onMouseDown={(event) => {
                   event.preventDefault();
-                  setElementType(editor, 'unordered-list');
+                  setElementType(editor, 'bulleted-list');
                 }}
               >
                 <List ordered={false} color='black' />
