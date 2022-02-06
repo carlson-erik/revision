@@ -175,7 +175,7 @@ const Editor = (props: EditorProps) => {
     }
   }
   return (
-    <Container className='rt-editor' ref={setContainerRef}>
+    <Container className='revision' ref={setContainerRef}>
       <Slate
         editor={editor}
         value={editorContent}

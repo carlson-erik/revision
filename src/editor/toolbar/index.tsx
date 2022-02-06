@@ -190,7 +190,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
 
   return (
     <Portal>
-      <Menu ref={setRef} className='rt-editor-toolbar'>
+      <Menu ref={setRef} className='revision-toolbar'>
         {editType === 'text'
           ? (
             <>
