@@ -10,7 +10,7 @@ import Link from "../icons/link";
 import styled from "styled-components";
 import Input from "../components/input";
 import { CustomElement, LinkInlineElement } from "../../types";
-import { isLinkActive } from "../../actions/inline";
+import { insertLink, isLinkActive, updateLink } from "../../actions/inline";
 import { getElementNode } from "../../actions";
 import isUrl from "is-url";
 
@@ -20,6 +20,7 @@ const OverlayContainer = styled.div`
   border-radius: 2px;
   margin-block: 0;
   padding: 0.5rem;
+  width: 16rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -88,7 +89,7 @@ const getInitialText = (node: CustomElement):string => {
 
 const LinkConfigOverlay = (props: LinkConfigOverlayProps) => {
   const { targetRef, isOpen, setIsOpen, currentNode, editingMode } = props;
-  // const editor = useSlate();
+  const editor = useSlate();
   const [url, setURL] = useState<string>(getInitialURL(currentNode));
   const [linkText, setLinkText] = useState<string>(getInitialText(currentNode));
   useEffect(() => {
@@ -101,34 +102,24 @@ const LinkConfigOverlay = (props: LinkConfigOverlayProps) => {
   }, [currentNode]);
 
   const onURLChange = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log("onChange event:", event.target.value);
     setURL(event.target.value || "");
-  };
+  }
 
   const onTextChange = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log("onChange event:", event.target.value);
     setLinkText(event.target.value || "");
-  };
+  }
 
   const onSubmit = () => {
-    if (linkText.trim() !== "" && url !== "" && isUrl(url)) {
-      // const currentPath = editor.selection?.anchor.path || [];
-      // const focusOffset = editor.selection?.anchor.offset || 0;
-      // if(editingMode === 'edit') {
-      //   // update existing link
-
-      //   Transforms.removeNodes(editor, { at: currentPath });
-      //   Transforms.insertNodes(editor, {
-      //     href: url,
-      //     text: linkText
-      //   })
-      //   focusPath(editor, currentPath, focusOffset);
-      //   setIsOpen(false);
-      // } else {
-      //   console.log('insert new link:', currentNode, currentNode.text.length, currentPath, focusOffset, linkText, url)
-      //   Transforms.splitNodes(editor, { at: currentPath });
-      // }
-      console.log("valid url and text:", url, linkText.trim());
+    if (url !== "" && isUrl(url)) {
+      if(editingMode === 'edit') {
+        console.log('update existing link with: ', url);
+        updateLink(editor, url);
+      } else {
+        const trimmedLabel = linkText.trim();
+        console.log('insert new link with:', trimmedLabel, url);
+        insertLink(editor, url, trimmedLabel);
+      }
+      setIsOpen(false);
     } else {
       console.log("invalid configuration");
     }
@@ -143,13 +134,15 @@ const LinkConfigOverlay = (props: LinkConfigOverlayProps) => {
         value={url}
         onChange={onURLChange}
       />
-      <Input
-        id="link-text-input"
-        type="text"
-        label="Link Text"
-        value={linkText}
-        onChange={onTextChange}
-      />
+      {editingMode === 'new' ? (
+        <Input
+          id="link-text-input"
+          type="text"
+          label="Link Text"
+          value={linkText}
+          onChange={onTextChange}
+        />
+      ): null}
       <ButtonContainer>
         <Button
           isPrimary={true}
@@ -168,13 +161,9 @@ const LinkSection = () => {
     null
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const node = getElementNode(editor);
-
   if (!node) return null;
-
   const isLinkFocused = isLinkActive(editor);
-
   return (
     <>
       <ActionButton

@@ -2,6 +2,7 @@ import { Editor, Element, Transforms, Range } from "slate";
 import { CustomEditor, LinkInlineElement } from "../types"
 
 import isUrl from 'is-url';
+import { getElementNode, getElementPath } from ".";
 
 // Put this at the start and end of an inline component to work around this Chromium bug:
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
@@ -14,9 +15,22 @@ const InlineChromiumBugfix = () => (
   </span>
 )
 
-const insertLink = (editor: CustomEditor, url: string) => {
-  if(editor.selection) {
-    wrapLink(editor, url);
+const updateLink = (editor: CustomEditor, url: string) => {
+  const elementPath = getElementPath(editor);
+  if(isLinkActive(editor) && elementPath) {
+    console.log('updating url to: ', url);
+    Transforms.setNodes(editor, { url }, {at: elementPath})
+  }
+}
+
+const insertLink = (editor: CustomEditor, url: string, linkLabel?: string) => {
+  if(!isLinkActive(editor)){
+    const link: LinkInlineElement = {
+      type: 'link',
+      url,
+      children: linkLabel && linkLabel !== '' ? [{ text: linkLabel }] : [{ text: url }],
+    }
+    Transforms.insertNodes(editor, link);
   }
 }
 
@@ -33,8 +47,8 @@ const wrapLink = (editor: CustomEditor, url: string) => {
     unwrapLink(editor)
   }
 
-  const { selection } = editor
-  const isCollapsed = selection && Range.isCollapsed(selection)
+  const { selection } = editor;
+  const isCollapsed = selection && Range.isCollapsed(selection);
   const link: LinkInlineElement = {
     type: 'link',
     url,
@@ -87,5 +101,6 @@ export {
   withInlines,
   isLinkActive,
   insertLink,
+  updateLink,
   InlineChromiumBugfix
 }

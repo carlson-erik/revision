@@ -1,15 +1,22 @@
+import styled from 'styled-components';
 import { RenderElementProps } from "slate-react";
 import { InlineChromiumBugfix } from "../actions/inline";
+
+const Link = styled.a`
+  & * {
+    color: blue !important;
+  }
+`;
 
 const LinkElement = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
   const url = 'url' in element ? element.url : '#';
   return (
-    <a {...attributes} href={url}>
+    <Link {...attributes} href={url}>
       <InlineChromiumBugfix />
       {children}
       <InlineChromiumBugfix />
-    </a>
+    </Link>
   );
 };
 
