@@ -34,6 +34,7 @@ import Align from './icons/align';
 import List from './icons/list';
 import Indent from './icons/indent';
 import Unindent from './icons/unindent';
+import Link from './icons/link';
 
 const elementOptions: Option[] = [
   {
@@ -101,6 +102,13 @@ const allElementOptions: Option[] = [
     value: 'bulleted-list',
     icon: (
       <List color='#343740' />
+    )
+  },
+  {
+    label: 'Link',
+    value: 'link',
+    icon: (
+      <Link color='#343740' />
     )
   }
 ]

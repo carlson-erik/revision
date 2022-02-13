@@ -1,25 +1,36 @@
-import { Path, Transforms } from 'slate';
-import { ReactEditor } from 'slate-react';
-import { CustomEditor, ElementType, ListElement, ListElementType, TextElementType, TextLeaf } from '../types';
+import { Path, Transforms } from "slate";
+import { ReactEditor } from "slate-react";
+import {
+  CustomEditor,
+  ElementType,
+  ListElement,
+  ListElementType,
+  TextElementType,
+  TextLeaf,
+} from "../types";
 
-const isListElementType = (elementType: ElementType): elementType is ListElementType => {
-  return elementType === 'ordered-list' || elementType === 'bulleted-list';
-}
+const isListElementType = (
+  elementType: ElementType
+): elementType is ListElementType => {
+  return elementType === "ordered-list" || elementType === "bulleted-list";
+};
 
-const isTextElementType = (elementType: ElementType): elementType is TextElementType => {
-  switch(elementType){
-    case 'header-one':
-    case 'header-two':
-    case 'header-three':
-    case 'header-four':
-    case 'header-five':
-    case 'header-six':
-    case 'paragraph':
+const isTextElementType = (
+  elementType: ElementType
+): elementType is TextElementType => {
+  switch (elementType) {
+    case "header-one":
+    case "header-two":
+    case "header-three":
+    case "header-four":
+    case "header-five":
+    case "header-six":
+    case "paragraph":
       return true;
     default:
       return false;
   }
-}
+};
 
 const collectAllTextLeaves = (listElement: ListElement): TextLeaf[] => {
   const listOfLeaves: TextLeaf[] = [];
@@ -27,28 +38,28 @@ const collectAllTextLeaves = (listElement: ListElement): TextLeaf[] => {
 
   for (let index = 0; index < children.length; index++) {
     const element = children[index];
-    if(element.type === 'ordered-list' || element.type === 'bulleted-list') {
-      listOfLeaves.push(...collectAllTextLeaves(element))
+    if (element.type === "ordered-list" || element.type === "bulleted-list") {
+      listOfLeaves.push(...collectAllTextLeaves(element));
     } else {
       // list-item things
-      listOfLeaves.push(...element.children as TextLeaf[]);
+      listOfLeaves.push(...(element.children as TextLeaf[]));
     }
-  };
-  
+  }
+
   return listOfLeaves;
-}
+};
 
 const focusPath = (editor: CustomEditor, focusPath: Path): void => {
   ReactEditor.focus(editor);
   Transforms.select(editor, {
     anchor: {
       path: focusPath,
-      offset: 0
+      offset: 0,
     },
     focus: {
       path: focusPath,
-      offset: 0
-    }
+      offset: 0,
+    },
   });
 };
 
@@ -56,5 +67,5 @@ export {
   isListElementType,
   isTextElementType,
   collectAllTextLeaves,
-  focusPath
-}
+  focusPath,
+};

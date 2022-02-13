@@ -1,4 +1,4 @@
-import { BaseEditor, BaseSelection } from 'slate';
+import { BaseEditor, BaseSelection, Descendant } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 
@@ -8,9 +8,11 @@ export type HeaderElementType = 'header-one' | 'header-two' | 'header-three' | '
 
 export type ListElementType = 'ordered-list' | 'bulleted-list';
 
+export type InlineElementType = 'link'
+
 export type TextElementType = 'paragraph' | HeaderElementType;
 
-export type ElementType = TextElementType | ListElementType | 'list-item';
+export type ElementType = TextElementType | ListElementType | 'list-item' | InlineElementType;
 
 /* -------- Formats -------- */
 
@@ -38,7 +40,7 @@ export interface Element {
 export interface ParagraphElement extends Element {
   type: 'paragraph';
   align: Alignment;
-  children: TextLeaf[];
+  children: Descendant[];
 };
 
 export interface HeaderElement extends Element {
@@ -57,9 +59,15 @@ export interface ListElement extends Element {
   children: (ListElement | ListItemElement)[];
 }
 
+export interface LinkInlineElement extends Element {
+  type: InlineElementType;
+  url: string;
+  children: Descendant[];
+}
+
 export type TextElement = ParagraphElement | HeaderElement;
 
-export type CustomElement = TextElement | ListElement | ListItemElement;
+export type CustomElement = TextElement | ListElement | ListItemElement | LinkInlineElement;
 
 /* -------- Editor -------- */
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;

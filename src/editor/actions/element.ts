@@ -55,7 +55,7 @@ const getElementPath = (editor: CustomEditor): Path | null => {
   for (let index = 0; index < path.length; index++) {
     const currLevelLocation = path[index];
     const currentNode = children[currLevelLocation];
-    if ('children' in currentNode) {
+    if (currentNode && 'children' in currentNode) {
       children = currentNode.children;
       elementPath.push(currLevelLocation);
     }
