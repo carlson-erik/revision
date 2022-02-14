@@ -2,23 +2,11 @@ import { Editor, Element, Transforms, Range } from "slate";
 import { CustomEditor, LinkInlineElement } from "../types"
 
 import isUrl from 'is-url';
-import { getElementNode, getElementPath } from ".";
-
-// Put this at the start and end of an inline component to work around this Chromium bug:
-// https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
-const InlineChromiumBugfix = () => (
-  <span
-    contentEditable={false}
-    style={{fontSize: 0}}
-  >
-    ${String.fromCodePoint(160) /* Non-breaking space */}
-  </span>
-)
+import { getElementPath } from ".";
 
 const updateLink = (editor: CustomEditor, url: string) => {
   const elementPath = getElementPath(editor);
   if(isLinkActive(editor) && elementPath) {
-    console.log('updating url to: ', url);
     Transforms.setNodes(editor, { url }, {at: elementPath})
   }
 }
@@ -102,5 +90,4 @@ export {
   isLinkActive,
   insertLink,
   updateLink,
-  InlineChromiumBugfix
 }

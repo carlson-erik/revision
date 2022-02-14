@@ -1,12 +1,22 @@
 import styled from 'styled-components';
 import { RenderElementProps } from "slate-react";
-import { InlineChromiumBugfix } from "../actions/inline";
 
 const Link = styled.a`
   & * {
     color: blue !important;
   }
 `;
+
+// Put this at the start and end of an inline component to work around this Chromium bug:
+// https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
+const InlineChromiumBugfix = () => (
+  <span
+    contentEditable={false}
+    style={{fontSize: 0}}
+  >
+    ${String.fromCodePoint(160) /* Non-breaking space */}
+  </span>
+)
 
 const LinkElement = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
@@ -21,3 +31,7 @@ const LinkElement = (props: RenderElementProps) => {
 };
 
 export default LinkElement;
+
+export {
+  InlineChromiumBugfix
+}

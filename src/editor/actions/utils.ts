@@ -26,6 +26,7 @@ const isTextElementType = (
     case "header-five":
     case "header-six":
     case "paragraph":
+    case "link":
       return true;
     default:
       return false;
