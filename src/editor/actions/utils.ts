@@ -55,16 +55,16 @@ const collectAllTextLeaves = (listElement: ListElement): TextLeaf[] => {
   return listOfLeaves;
 };
 
-const focusPath = (editor: CustomEditor, focusPath: Path): void => {
+const focusPath = (editor: CustomEditor, focusPath: Path, offset?: number): void => {
   ReactEditor.focus(editor);
   Transforms.select(editor, {
     anchor: {
       path: focusPath,
-      offset: 0,
+      offset: offset || 0,
     },
     focus: {
       path: focusPath,
-      offset: 0,
+      offset: offset || 0,
     },
   });
 };

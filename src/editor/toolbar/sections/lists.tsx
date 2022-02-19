@@ -8,15 +8,13 @@ import Unindent from "../icons/unindent";
 /* -------- Actions & Types-------- */
 import { canIndentListItem, canOutdentListItem, getElementNode, getParentElementNode, indentListItem, outdentListItem, setElementType } from "../../actions";
 import { SectionContainer } from "../styled";
-import { getInlineParentNode, getInlineParentPath, isInlineActive } from "../../actions/inline";
+import { getContainer, getContainerParent, isInlineActive } from "../../actions/inline";
 
 const ListSection = () => {
   const editor = useSlate();
-  let activeElement = getElementNode(editor);
-  let activeElementParent = getParentElementNode(editor);
-  if(isInlineActive(editor) ) {
-    activeElement = getInlineParentNode(editor);
-  }
+  const activeInline = isInlineActive(editor);
+  const activeElement = activeInline ? getContainer(editor) : getElementNode(editor);
+  const activeElementParent = activeInline ? getContainerParent(editor): getParentElementNode(editor);
   return (
     <SectionContainer>
       <ActionButton

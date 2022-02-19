@@ -6,10 +6,11 @@ import { SectionContainer } from "../styled";
 import { getElementNode, isTextElement, setElementFormat } from "../../actions";
 /* -------- Icon Components -------- */
 import Align from "../icons/align";
+import { getContainer, isInlineActive } from "../../actions/inline";
 
 const AlignmentSection = () => {
   const editor = useSlate();
-  const activeElement = getElementNode(editor);
+  const activeElement = isInlineActive(editor) ? getContainer(editor) : getElementNode(editor);
 
   if (!activeElement || !isTextElement(activeElement)) {
     return null;

@@ -2,7 +2,7 @@ import { Transforms, Path, Descendant } from "slate";
 import { getElementPath, getElementNode, getParentElementNode } from "./element";
 import { CustomEditor, CustomElement, ListElement, ListElementType, ListItemElement } from "../types";
 import { focusPath } from "./utils";
-import { getInlineParentPath, isInlineActive } from "./inline";
+import { getContainer, getContainerParent, getContainerPath, isInlineActive } from "./inline";
 
 const isListElement = (element: Descendant | null): element is ListElement => {
   return element && "type" in element && (element.type === 'bulleted-list' || element.type === 'ordered-list') ? true : false;
@@ -73,14 +73,15 @@ const wrapListItem = (editor: CustomEditor, path: Path, node: ListItemElement, l
     ]
   };
   Transforms.removeNodes(editor, { at: path });
-  Transforms.insertNodes(editor, listNode, { at: path });
+  Transforms.insertNodes(editor, listNode, { at: path }); 
   focusPath(editor, path);
 };
 
 const indentListItem = (editor: CustomEditor) => {
-  const currentPath = getElementPath(editor);
-  const currentNode = getElementNode(editor);
-  const parentNode = getParentElementNode(editor);
+  const activeInline = isInlineActive(editor);
+  const currentPath = activeInline ? getContainerPath(editor) : getElementPath(editor);
+  const currentNode = activeInline ? getContainer(editor) : getElementNode(editor);
+  const parentNode = activeInline ? getContainerParent(editor): getParentElementNode(editor);
   if (currentNode && currentNode.type === 'list-item' && currentPath && parentNode && isListElement(parentNode)) {
     // can't indent if there is only one item in the list
     if (parentNode.children.length === 1) return;
@@ -139,9 +140,10 @@ const indentListItem = (editor: CustomEditor) => {
 };
 
 const outdentListItem = (editor: CustomEditor) => {
-  const currentPath = getElementPath(editor);
-  const currentNode = getElementNode(editor);
-  const parentNode = getParentElementNode(editor);
+  const activeInline = isInlineActive(editor);
+  const currentPath = activeInline ? getContainerPath(editor) : getElementPath(editor);
+  const currentNode = activeInline ? getContainer(editor) : getElementNode(editor);
+  const parentNode = activeInline ? getContainerParent(editor): getParentElementNode(editor);
   if (parentNode && isListElement(parentNode) && currentNode && currentPath && currentPath.length > 2) {
     let insertPath = [...currentPath].slice(0, currentPath.length - 1);
     const currentNodeIndex = currentPath[currentPath.length - 1];
@@ -212,21 +214,19 @@ const outdentListItem = (editor: CustomEditor) => {
 };
 
 const canOutdentListItem = (editor: CustomEditor): boolean => {
-  const currentPath = getElementPath(editor);
-  return currentPath && currentPath.length > 2 ? true : false;
+  const currentPath = isInlineActive(editor) ? getContainerPath(editor) :  getElementPath(editor);
+  if(currentPath) {
+    if(currentPath.length > 2) return true;
+  }
+  return false;
 }
 
 const canIndentListItem = (editor: CustomEditor): boolean => {
-  const activeInline = isInlineActive(editor) ;
-  const currentPath = activeInline ? getInlineParentPath(editor) :  getElementPath(editor);
+  const activeInline = isInlineActive(editor);
+  const currentPath = activeInline ? getContainerPath(editor) :  getElementPath(editor);
+  const parentNode = activeInline ? getContainerParent(editor) : getParentElementNode(editor);
   if(!currentPath) return false;
   const currentNode = getElementNode(editor, currentPath);
-  let parentNode = getParentElementNode(editor)
-  if(activeInline) {
-    const parentPath = [...currentPath];
-    parentPath.pop();
-    parentNode = getElementNode(editor, parentPath);
-  }
   if (currentPath && currentNode && currentNode.type === 'list-item' && parentNode) {
     const currentNodeIndex = currentPath[currentPath.length-1];
     const nextNode = parentNode.children[currentNodeIndex+1];

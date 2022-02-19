@@ -161,8 +161,8 @@ const LinkSection = () => {
     null
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const node = getElementNode(editor);
-  if (!node) return null;
+  const elementNode = getElementNode(editor);
+  if (!elementNode) return null;
   const isLinkFocused = isLinkActive(editor);
   return (
     <>
@@ -176,12 +176,12 @@ const LinkSection = () => {
       >
         <Link color="black" />
       </ActionButton>
-      {ActionButtonRef && node ? (
+      {ActionButtonRef && elementNode ? (
         <LinkConfigOverlay
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           targetRef={ActionButtonRef}
-          currentNode={node}
+          currentNode={elementNode}
           editingMode={isLinkFocused ? "edit" : "new"}
         />
       ) : null}

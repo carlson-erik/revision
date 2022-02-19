@@ -2,7 +2,7 @@ import { Editor, Element, Transforms, Range, Path } from "slate";
 import { CustomEditor, CustomElement, LinkInlineElement } from "../types"
 
 import isUrl from 'is-url';
-import { getElementPath, getElementNode, getParentElementPath } from "./element";
+import { getElementPath, getElementNode } from "./element";
 
 const isInlineActive = (editor:CustomEditor) => {
   const [link] = Editor.nodes(editor, {
@@ -12,20 +12,35 @@ const isInlineActive = (editor:CustomEditor) => {
   return !!link
 }
 
-const getInlineParentNode = (editor: CustomEditor): CustomElement | null => {
-  const parentPath = getInlineParentPath(editor);
+const getContainer = (editor: CustomEditor): CustomElement | null => {
+  if(!isInlineActive(editor)) return null;
+  const parentPath = getContainerPath(editor);
   if(!parentPath) return null;
   return getElementNode(editor, parentPath);
 };
 
-const getInlineParentPath = (editor: CustomEditor): Path | null => {
+const getContainerPath = (editor: CustomEditor): Path | null => {
   if(!isInlineActive(editor)) return null;
-  const path = getParentElementPath(editor);
+  const path = getElementPath(editor);
   if(!path) return null;
-  const parentNode = getElementNode(editor, path);
-  if(!parentNode) return null;
+  path.pop();
   return path;
 };
+
+const getContainerParent = (editor: CustomEditor): CustomElement | null => {
+  if(!isInlineActive(editor)) return null;
+  const containerParentPath = getContainerParentPath(editor);
+  if(!containerParentPath) return null;
+  return getElementNode(editor, containerParentPath);
+}
+
+const getContainerParentPath = (editor: CustomEditor): Path | null => {
+  if(!isInlineActive(editor)) return null;
+  const containerPath = getContainerPath(editor);
+  if(!containerPath || containerPath.length === 1) return null;
+  containerPath.pop();
+  return containerPath;
+}
 
 const updateLink = (editor: CustomEditor, url: string) => {
   const elementPath = getElementPath(editor);
@@ -110,8 +125,10 @@ const withInlines = (editor: CustomEditor) => {
 
 export {
   withInlines,
-  getInlineParentNode,
-  getInlineParentPath,
+  getContainer,
+  getContainerPath,
+  getContainerParent,
+  getContainerParentPath,
   isInlineActive,
   isLinkActive,
   insertLink,
