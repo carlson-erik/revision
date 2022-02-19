@@ -190,6 +190,7 @@ const Editor = (props: EditorProps) => {
       if (
         event.key === "Enter" &&
         currentNode.type === "list-item" &&
+        "text" in currentNode.children[0] && 
         currentNode.children[0].text === ""
       ) {
         // This prevents the user from creating more than one empty list item in any given list.

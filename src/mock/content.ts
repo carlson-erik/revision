@@ -166,13 +166,23 @@ const LIST_EXAMPLES: CustomElement[] = [
       {
         type: 'list-item',
         children: [
-          { text: 'list item text 1' },
+          { text: 'list item text 1 ' },
+          {
+            type: 'link',
+            url: 'https://en.wikipedia.org/wiki/Hypertext',
+            children: [{ text: 'Hypertext Wikipedia article link.' }],
+          },
         ]
       },
       {
         type: 'list-item',
         children: [
-          { text: 'list item text 2' },
+          { text: 'list item text 2 - ' },
+          {
+            type: 'link',
+            url: 'https://en.wikipedia.org/wiki/Hypertext',
+            children: [{ text: 'Hypertext Wikipedia article link.' }],
+          },
         ]
       }
     ]

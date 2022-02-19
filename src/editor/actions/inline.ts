@@ -1,8 +1,31 @@
-import { Editor, Element, Transforms, Range } from "slate";
-import { CustomEditor, LinkInlineElement } from "../types"
+import { Editor, Element, Transforms, Range, Path } from "slate";
+import { CustomEditor, CustomElement, LinkInlineElement } from "../types"
 
 import isUrl from 'is-url';
-import { getElementPath } from ".";
+import { getElementPath, getElementNode, getParentElementPath } from "./element";
+
+const isInlineActive = (editor:CustomEditor) => {
+  const [link] = Editor.nodes(editor, {
+    match: n =>
+      !Editor.isEditor(n) && Element.isElement(n) && n.type === 'link',
+  })
+  return !!link
+}
+
+const getInlineParentNode = (editor: CustomEditor): CustomElement | null => {
+  const parentPath = getInlineParentPath(editor);
+  if(!parentPath) return null;
+  return getElementNode(editor, parentPath);
+};
+
+const getInlineParentPath = (editor: CustomEditor): Path | null => {
+  if(!isInlineActive(editor)) return null;
+  const path = getParentElementPath(editor);
+  if(!path) return null;
+  const parentNode = getElementNode(editor, path);
+  if(!parentNode) return null;
+  return path;
+};
 
 const updateLink = (editor: CustomEditor, url: string) => {
   const elementPath = getElementPath(editor);
@@ -87,6 +110,9 @@ const withInlines = (editor: CustomEditor) => {
 
 export {
   withInlines,
+  getInlineParentNode,
+  getInlineParentPath,
+  isInlineActive,
   isLinkActive,
   insertLink,
   updateLink,

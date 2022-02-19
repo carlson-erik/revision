@@ -3,6 +3,7 @@ import { ReactEditor } from "slate-react";
 import {
   CustomEditor,
   ElementType,
+  InlineElementType,
   ListElement,
   ListElementType,
   TextElementType,
@@ -32,6 +33,10 @@ const isTextElementType = (
       return false;
   }
 };
+
+const isInlineElementType = (elementType: ElementType): elementType is InlineElementType => {
+  return elementType === 'link';
+}
 
 const collectAllTextLeaves = (listElement: ListElement): TextLeaf[] => {
   const listOfLeaves: TextLeaf[] = [];
@@ -66,6 +71,7 @@ const focusPath = (editor: CustomEditor, focusPath: Path): void => {
 
 export {
   isListElementType,
+  isInlineElementType,
   isTextElementType,
   collectAllTextLeaves,
   focusPath,

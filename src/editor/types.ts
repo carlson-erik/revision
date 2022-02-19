@@ -33,6 +33,8 @@ export interface TextLeaf {
 }
 
 /* -------- Elements -------- */
+export type InlineElement = TextLeaf | LinkInlineElement;
+
 export interface Element {
   type: ElementType
 }
@@ -40,18 +42,18 @@ export interface Element {
 export interface ParagraphElement extends Element {
   type: 'paragraph';
   align: Alignment;
-  children: Descendant[];
+  children: InlineElement[];
 };
 
 export interface HeaderElement extends Element {
   type: HeaderElementType;
   align: Alignment;
-  children: TextLeaf[];
+  children: InlineElement[];
 };
 
 export interface ListItemElement extends Element {
   type: 'list-item';
-  children: TextLeaf[];
+  children: InlineElement[];
 }
 
 export interface ListElement extends Element {
@@ -62,7 +64,7 @@ export interface ListElement extends Element {
 export interface LinkInlineElement extends Element {
   type: InlineElementType;
   url: string;
-  children: Descendant[];
+  children: InlineElement[];
 }
 
 export type TextElement = ParagraphElement | HeaderElement;

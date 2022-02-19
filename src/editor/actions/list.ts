@@ -2,6 +2,7 @@ import { Transforms, Path, Descendant } from "slate";
 import { getElementPath, getElementNode, getParentElementNode } from "./element";
 import { CustomEditor, CustomElement, ListElement, ListElementType, ListItemElement } from "../types";
 import { focusPath } from "./utils";
+import { getInlineParentPath, isInlineActive } from "./inline";
 
 const isListElement = (element: Descendant | null): element is ListElement => {
   return element && "type" in element && (element.type === 'bulleted-list' || element.type === 'ordered-list') ? true : false;
@@ -216,9 +217,16 @@ const canOutdentListItem = (editor: CustomEditor): boolean => {
 }
 
 const canIndentListItem = (editor: CustomEditor): boolean => {
-  const currentNode = getElementNode(editor);
-  const currentPath = getElementPath(editor);
-  const parentNode = getParentElementNode(editor);
+  const activeInline = isInlineActive(editor) ;
+  const currentPath = activeInline ? getInlineParentPath(editor) :  getElementPath(editor);
+  if(!currentPath) return false;
+  const currentNode = getElementNode(editor, currentPath);
+  let parentNode = getParentElementNode(editor)
+  if(activeInline) {
+    const parentPath = [...currentPath];
+    parentPath.pop();
+    parentNode = getElementNode(editor, parentPath);
+  }
   if (currentPath && currentNode && currentNode.type === 'list-item' && parentNode) {
     const currentNodeIndex = currentPath[currentPath.length-1];
     const nextNode = parentNode.children[currentNodeIndex+1];
