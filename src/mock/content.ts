@@ -108,7 +108,18 @@ const LIST_EXAMPLES: CustomElement[] = [
   {
     type: 'paragraph',
     align: 'left',
-    children: [{ text: 'Quisque eu magna sem. Curabitur interdum vitae ante id fermentum. Donec venenatis ex ut libero semper, eu vulputate enim elementum. Fusce condimentum laoreet massa vitae laoreet. In pharetra elit libero, at hendrerit quam tempor ac. Morbi id blandit elit. Morbi sed nisi tristique, suscipit ante sagittis, elementum arcu. Sed et dapibus lacus. Phasellus laoreet quam et ante aliquet euismod.' }],
+    children: [
+      { text: 'Quisque eu magna sem. Curabitur interdum vitae ante id fermentum. Donec venenatis ex ut libero semper, eu vulputate enim elementum. ' },
+      {
+        type: 'link',
+        url: 'https://en.wikipedia.org/wiki/Hypertext',
+        children: [{ text: 'Hypertext Wikipedia article link.' }],
+      },
+      {
+        text: ' Fusce condimentum laoreet massa vitae laoreet. In pharetra elit libero, at hendrerit quam tempor ac. Morbi id blandit elit. Morbi sed nisi tristique, suscipit ante sagittis, elementum arcu. Sed et dapibus lacus. Phasellus laoreet quam et ante aliquet euismod.'
+      }
+    
+    ],
   },
   {
     type: 'paragraph',
@@ -155,13 +166,23 @@ const LIST_EXAMPLES: CustomElement[] = [
       {
         type: 'list-item',
         children: [
-          { text: 'list item text 1' },
+          { text: 'list item text 1 ' },
+          {
+            type: 'link',
+            url: 'https://en.wikipedia.org/wiki/Hypertext',
+            children: [{ text: 'Hypertext Wikipedia article link.' }],
+          },
         ]
       },
       {
         type: 'list-item',
         children: [
-          { text: 'list item text 2' },
+          { text: 'list item text 2 - ' },
+          {
+            type: 'link',
+            url: 'https://en.wikipedia.org/wiki/Hypertext',
+            children: [{ text: 'Hypertext Wikipedia article link.' }],
+          },
         ]
       }
     ]

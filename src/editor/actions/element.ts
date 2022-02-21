@@ -55,7 +55,7 @@ const getElementPath = (editor: CustomEditor): Path | null => {
   for (let index = 0; index < path.length; index++) {
     const currLevelLocation = path[index];
     const currentNode = children[currLevelLocation];
-    if ('children' in currentNode) {
+    if (currentNode && 'children' in currentNode) {
       children = currentNode.children;
       elementPath.push(currLevelLocation);
     }
@@ -93,13 +93,13 @@ const isElementTypeActive = (editor: CustomEditor, elementType: ElementType): bo
 const setElementType = (editor: CustomEditor, elementType: ElementType): void => {
   let activeElement = getElementNode(editor);
   let useParent: boolean = false;
-  if (activeElement?.type === 'list-item') {
+  if (activeElement?.type === 'list-item' || activeElement?.type === 'link' ) {
     activeElement = getParentElementNode(editor);
     useParent = true;
   }
   const path = useParent ? getParentElementPath(editor) : getElementPath(editor);
   if (path && activeElement && activeElement.type !== elementType) {
-    if (isListElementType(elementType) && !isListElementType(activeElement.type)) {
+    if (isListElementType(elementType) && isTextElementType(activeElement.type)) {
       /*
        * case: converting to list element from existing text element 
       */

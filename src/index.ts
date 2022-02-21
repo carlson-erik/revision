@@ -1,12 +1,10 @@
 /* -------- Types -------- */
-import { EditorProps } from './editor'
+import { EditorProps as RevisionProps } from './editor'
 /* -------- Components -------- */
-import Editor from './editor';
+import Revision from './editor';
 
 export type {
-  EditorProps
+  RevisionProps
 }
 
-export {
-  Editor
-}
+export default Revision;
