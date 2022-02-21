@@ -1,17 +1,13 @@
 import { MouseEventHandler, ReactNode, Ref } from 'react';
 import styled from 'styled-components';
 
-const StyledButton = styled.button<{ active?: boolean}>`
+const StyledButton = styled.span<{ active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   border: 0;
   padding: 0.25rem;
   background-color: #FFFFFF;
-
-  &:hover {
-    background-color: #D1D4D9;
-  }
 
   ${props => props.active ?
     `background-color: #D1D4D9;`

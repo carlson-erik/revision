@@ -114,6 +114,16 @@ const EMPTY_DOCUMENT: Descendant[] = [
 const renderElement = (props: RenderElementProps) => {
   const { element } = props;
   switch (element.type) {
+    /* ------ LIST ELEMENTS ------ */
+    case "ordered-list":
+    case "bulleted-list":
+      return <ListElement {...props} />;
+    case "list-item":
+      return <ListItemElement {...props} />;
+    /* ------ INLINE ELEMENTS ------ */
+    case "link":
+      return <LinkElement {...props} />;
+    /* ------ TEXT ELEMENTS ------ */
     case "header-one":
     case "header-two":
     case "header-three":
@@ -121,13 +131,6 @@ const renderElement = (props: RenderElementProps) => {
     case "header-five":
     case "header-six":
       return <HeaderElement {...props} />;
-    case "ordered-list":
-    case "bulleted-list":
-      return <ListElement {...props} />;
-    case "list-item":
-      return <ListItemElement {...props} />;
-    case "link":
-      return <LinkElement {...props} />;
     default:
       return <DefaultElement {...props} />;
   }

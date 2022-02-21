@@ -112,16 +112,12 @@ const LinkConfigOverlay = (props: LinkConfigOverlayProps) => {
   const onSubmit = () => {
     if (url !== "" && isUrl(url)) {
       if(editingMode === 'edit') {
-        console.log('update existing link with: ', url);
         updateLink(editor, url);
       } else {
         const trimmedLabel = linkText.trim();
-        console.log('insert new link with:', trimmedLabel, url);
         insertLink(editor, url, trimmedLabel);
       }
       setIsOpen(false);
-    } else {
-      console.log("invalid configuration");
     }
   };
 

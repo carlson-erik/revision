@@ -31,6 +31,8 @@ const ListSection = () => {
   const activeElementParent = activeInline
     ? getContainerParent(editor)
     : getParentElementNode(editor);
+  const canIndent = canIndentListItem(editor);
+  const canOutdent = canOutdentListItem(editor);
   return (
     <SectionContainer>
       <ActionButton
@@ -53,26 +55,26 @@ const ListSection = () => {
       </ActionButton>
       {activeElement?.type === "list-item" ? (
         <>
-          {canOutdentListItem(editor) ? (
-            <ActionButton
-              onMouseDown={(event: any) => {
-                event.preventDefault();
+          <ActionButton
+            onMouseDown={(event: any) => {
+              event.preventDefault();
+              if (canOutdent) {
                 outdentListItem(editor);
-              }}
-            >
-              <Unindent color="black" />
-            </ActionButton>
-          ) : null}
-          {canIndentListItem(editor) ? (
-            <ActionButton
-              onMouseDown={(event) => {
-                event.preventDefault();
+              }
+            }}
+          >
+            <Unindent color={canOutdent ? 'black' : '#b7b7b7'} />
+          </ActionButton>
+          <ActionButton
+            onMouseDown={(event) => {
+              event.preventDefault();
+              if (canIndent) {
                 indentListItem(editor);
-              }}
-            >
-              <Indent color="black" />
-            </ActionButton>
-          ) : null}
+              }
+            }}
+          >
+            <Indent color={canIndent ? 'black' : '#b7b7b7'} />
+          </ActionButton>
         </>
       ) : null}
     </SectionContainer>

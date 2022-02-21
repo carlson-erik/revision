@@ -45,7 +45,6 @@ const mergeWithPreviousList = (
   // Insert new node
   Transforms.insertNodes(editor, mergedNode, { at: listPath });
   // Focus correct location in new merged node
-  console.log('editor.children:', editor.children, [...listPath, listNode.children.length, ...finalFocusPath]);
   focusPath(editor, [...listPath, listNode.children.length, ...finalFocusPath], finalFocusOffset);
 };
 
@@ -68,7 +67,6 @@ const mergeWithNextList = (
   // Insert new node
   Transforms.insertNodes(editor, mergedNode, { at: listItemPath });
   // Focus correct location in new merged node
-  console.log('mergewithnext focus - ', [...listItemPath, 0, ...finalFocusPath], finalFocusOffset, editor.children);
   focusPath(editor, [...listItemPath, 0, ...finalFocusPath], finalFocusOffset);
 };
 
@@ -111,7 +109,6 @@ const wrapListItem = (
   };
   Transforms.removeNodes(editor, { at: path });
   Transforms.insertNodes(editor, listNode, { at: path });
-  console.log('editor.children:', editor.children, [...path, ...finalFocusPath]);
   focusPath(editor, [...path, 0, ...finalFocusPath], finalFocusOffset );
 };
 

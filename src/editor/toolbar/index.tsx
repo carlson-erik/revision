@@ -109,10 +109,9 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
     if (
       containerRef &&
       !containerRef.contains(event.target) &&
-      ref &&
-      !ref.contains(event.target)
+      ref
     ) {
-      ref.removeAttribute("style");
+      ref.style.opacity = "0";
     }
   };
 
@@ -135,10 +134,10 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
       return;
     }
 
-    if (!Range.isCollapsed(selection)) {
-      setEditType("text");
-    } else {
+    if (Range.isCollapsed(selection)) {
       setEditType("element");
+    } else {
+      setEditType("text");
     }
 
     const domSelection = window.getSelection();
@@ -153,10 +152,9 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
     }
   });
 
-  if (editType === "hidden" && ref) ref.removeAttribute("style");
+  if (editType === "hidden" && ref) ref.style.opacity = "0";
 
   return (
-    <Portal>
       <Menu ref={setRef} className="revision-toolbar">
         {editType === "text" ? (
           <TextFormatSection />
@@ -178,7 +176,6 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
           </>
         )}
       </Menu>
-    </Portal>
   );
 };
 
