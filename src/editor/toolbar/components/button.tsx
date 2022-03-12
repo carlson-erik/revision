@@ -44,7 +44,7 @@ const Secondary = styled(StyledButton)`
     outline-color: #a9aeb7;
   }
 `;
-const ButtonLabel = styled.span`
+const Label = styled.span`
   font-size: 12px;
   line-height: 20px;
 `;
@@ -57,17 +57,12 @@ interface ButtonProps {
 
 function Button(props: ButtonProps) {
   const { children, onClick, primary } = props;
+  const ButtonComponent = primary ? Primary : Secondary;
   return (
-    <Action onClick={onClick}>
-      {primary ? (
-        <Primary>
-          <ButtonLabel>{children}</ButtonLabel>
-        </Primary>
-      ) : (
-        <Secondary>
-          <ButtonLabel>{children}</ButtonLabel>
-        </Secondary>
-      )}
+    <Action onClick={onClick} data-testid="button">
+      <ButtonComponent>
+        <Label>{children}</Label>
+      </ButtonComponent>
     </Action>
   );
 }

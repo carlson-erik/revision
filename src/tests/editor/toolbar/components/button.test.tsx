@@ -1,18 +1,19 @@
-import { render } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 
 import Button from "../../../../editor/toolbar/components/button";
 
 describe("Toolbar Button component", () => {
   test("Renders Primary Button", () => {
-    const onClick = jest.fn();
+    const onClickHandler = jest.fn();
     const { container } = render(
-      <Button onClick={onClick} primary>
+      <Button onClick={onClickHandler} primary>
         Button Text
       </Button>
     );
     expect(container.firstChild).toMatchInlineSnapshot(`
       <a
         class="sc-bdvvtL fkJOrK"
+        data-testid="button"
       >
         <button
           class="sc-gsDKAQ sc-dkPtRN kuwXBZ gdULhr"
@@ -25,16 +26,19 @@ describe("Toolbar Button component", () => {
         </button>
       </a>
     `);
+    fireEvent.click(screen.getByTestId("button"));
+    expect(onClickHandler).toHaveBeenCalledTimes(1);
   });
 
   test("Renders Secondary Button", () => {
-    const onClick = jest.fn();
+    const onClickHandler = jest.fn();
     const { container } = render(
-      <Button onClick={onClick}>Button Text</Button>
+      <Button onClick={onClickHandler}>Button Text</Button>
     );
     expect(container.firstChild).toMatchInlineSnapshot(`
       <a
         class="sc-bdvvtL fkJOrK"
+        data-testid="button"
       >
         <button
           class="sc-gsDKAQ sc-hKwDye kuwXBZ bbODPH"
@@ -47,5 +51,7 @@ describe("Toolbar Button component", () => {
         </button>
       </a>
     `);
+    fireEvent.click(screen.getByTestId("button"));
+    expect(onClickHandler).toHaveBeenCalledTimes(1);
   });
 });

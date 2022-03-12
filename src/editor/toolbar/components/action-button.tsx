@@ -1,5 +1,5 @@
-import { MouseEventHandler, ReactNode, Ref } from 'react';
-import styled from 'styled-components';
+import { MouseEventHandler, ReactNode, Ref } from "react";
+import styled from "styled-components";
 
 const StyledButton = styled.span<{ active?: boolean }>`
   display: flex;
@@ -7,11 +7,9 @@ const StyledButton = styled.span<{ active?: boolean }>`
   justify-content: center;
   border: 0;
   padding: 0.25rem;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 
-  ${props => props.active ?
-    `background-color: #D1D4D9;`
-    : ''}
+  ${(props) => (props.active ? `background-color: #D1D4D9;` : "")}
 `;
 
 interface ActionButtonProps {
@@ -25,7 +23,13 @@ interface ActionButtonProps {
 const ActionButton = (props: ActionButtonProps) => {
   const { children, active, onClick, onMouseDown, reference } = props;
   return (
-    <StyledButton onClick={onClick} onMouseDown={onMouseDown} active={active} ref={reference} >
+    <StyledButton
+      onClick={onClick}
+      onMouseDown={onMouseDown}
+      active={active}
+      ref={reference}
+      data-testid="action-button"
+    >
       {children}
     </StyledButton>
   );
