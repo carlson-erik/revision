@@ -77,9 +77,9 @@ const isLinkElement = (node: CustomElement): node is LinkInlineElement => {
 
 const getInitialURL = (node: CustomElement): string => {
   return isLinkElement(node) ? node.url : "";
-}
+};
 
-const getInitialText = (node: CustomElement):string => {
+const getInitialText = (node: CustomElement): string => {
   return isLinkElement(node) &&
     node?.children.length > 0 &&
     "text" in node.children[0]
@@ -103,15 +103,15 @@ const LinkConfigOverlay = (props: LinkConfigOverlayProps) => {
 
   const onURLChange = (event: ChangeEvent<HTMLInputElement>) => {
     setURL(event.target.value || "");
-  }
+  };
 
   const onTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     setLinkText(event.target.value || "");
-  }
+  };
 
   const onSubmit = () => {
     if (url !== "" && isUrl(url)) {
-      if(editingMode === 'edit') {
+      if (editingMode === "edit") {
         updateLink(editor, url);
       } else {
         const trimmedLabel = linkText.trim();
@@ -130,7 +130,7 @@ const LinkConfigOverlay = (props: LinkConfigOverlayProps) => {
         value={url}
         onChange={onURLChange}
       />
-      {editingMode === 'new' ? (
+      {editingMode === "new" ? (
         <Input
           id="link-text-input"
           type="text"
@@ -138,14 +138,11 @@ const LinkConfigOverlay = (props: LinkConfigOverlayProps) => {
           value={linkText}
           onChange={onTextChange}
         />
-      ): null}
+      ) : null}
       <ButtonContainer>
-        <Button
-          isPrimary={true}
-          isActive={false}
-          label={editingMode === "edit" ? "Update link" : "Insert link"}
-          onClick={onSubmit}
-        />
+        <Button primary onClick={onSubmit}>
+          {editingMode === "edit" ? "Update link" : "Insert link"}
+        </Button>
       </ButtonContainer>
     </Overlay>
   );
