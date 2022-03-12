@@ -93,6 +93,39 @@ const Menu = styled.div`
   align-items: center;
 `;
 
+interface ToolbarProps {
+  editType: "text" | "element" | "hidden";
+}
+
+const Toolbar = (props: ToolbarProps) => {
+  const { editType } = props;
+  const editor = useSlate();
+
+  if (editType === "hidden") return null;
+
+  if (editType === "text") {
+    return <TextFormatSection />;
+  }
+
+  return (
+    <>
+      <SectionContainer>
+        <Dropdown
+          options={elementOptions}
+          allOptions={allElementOptions}
+          placeholder="Select new element.."
+          onChange={(newOption) => {
+            setElementType(editor, newOption.value as ElementType);
+          }}
+        />
+      </SectionContainer>
+      <AlignmentSection />
+      <ListSection />
+      <LinkSection />
+    </>
+  );
+};
+
 interface HoveringToolbarProps {
   containerRef: HTMLElement;
 }
@@ -106,11 +139,7 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
   const editor = useSlate();
 
   const handleOutsideClick = (event: any) => {
-    if (
-      containerRef &&
-      !containerRef.contains(event.target) &&
-      ref
-    ) {
+    if (containerRef && !containerRef.contains(event.target) && ref) {
       ref.style.opacity = "0";
     }
   };
@@ -152,31 +181,18 @@ const HoveringToolbar = (props: HoveringToolbarProps) => {
     }
   });
 
-  if (editType === "hidden" && ref) ref.style.opacity = "0";
-
+  if (editType === "hidden") {
+    if (ref) {
+      ref.style.opacity = "0";
+    }
+  }
   return (
-      <Menu ref={setRef} className="revision-toolbar">
-        {editType === "text" ? (
-          <TextFormatSection />
-        ) : (
-          <>
-            <SectionContainer>
-              <Dropdown
-                options={elementOptions}
-                allOptions={allElementOptions}
-                placeholder="Select new element.."
-                onChange={(newOption) => {
-                  setElementType(editor, newOption.value as ElementType);
-                }}
-              />
-            </SectionContainer>
-            <AlignmentSection />
-            <ListSection />
-            <LinkSection />
-          </>
-        )}
-      </Menu>
+    <Menu ref={setRef} className="revision-toolbar">
+      <Toolbar editType={editType} />
+    </Menu>
   );
 };
 
 export default HoveringToolbar;
+
+export { Toolbar };

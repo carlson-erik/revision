@@ -15,12 +15,12 @@ import {
   outdentListItem,
   setElementType,
 } from "../../actions";
-import { SectionContainer } from "../styled";
 import {
   getContainer,
   getContainerParent,
   isInlineActive,
 } from "../../actions/inline";
+import { SectionContainer } from "../styled";
 
 const ListSection = () => {
   const editor = useSlate();
@@ -63,7 +63,7 @@ const ListSection = () => {
               }
             }}
           >
-            <Unindent color={canOutdent ? 'black' : '#b7b7b7'} />
+            <Unindent color={canOutdent ? "black" : "#b7b7b7"} />
           </ActionButton>
           <ActionButton
             onMouseDown={(event) => {
@@ -73,7 +73,7 @@ const ListSection = () => {
               }
             }}
           >
-            <Indent color={canIndent ? 'black' : '#b7b7b7'} />
+            <Indent color={canIndent ? "black" : "#b7b7b7"} />
           </ActionButton>
         </>
       ) : null}
