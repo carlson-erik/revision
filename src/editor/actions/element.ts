@@ -1,4 +1,5 @@
-import { Editor, Element, Transforms, Path } from "slate";
+import { Editor, Element, Transforms, Path, BaseSelection } from "slate";
+import { ReactEditor } from "slate-react";
 import {
   Alignment,
   CustomEditor,
@@ -122,6 +123,7 @@ const setElementType = (
   editor: CustomEditor,
   elementType: ElementType
 ): void => {
+  const selection = editor.selection;
   const activeInline = isInlineActive(editor);
   let path: null | Path = [];
   let activeElement = activeInline
@@ -138,7 +140,12 @@ const setElementType = (
     path = activeInline ? getContainerPath(editor) : getElementPath(editor);
   }
 
-  if (path && activeElement && activeElement.type !== elementType) {
+  if (
+    selection &&
+    path &&
+    activeElement &&
+    activeElement.type !== elementType
+  ) {
     if (
       isListElementType(elementType) &&
       isTextElementType(activeElement.type)
@@ -196,6 +203,8 @@ const setElementType = (
        * case: changing text element types in an already existing text element structure
        */
       Transforms.setNodes(editor, { type: elementType }, { mode: "highest" });
+      ReactEditor.focus(editor);
+      Transforms.select(editor, selection);
     }
   }
 };

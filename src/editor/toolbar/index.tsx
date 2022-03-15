@@ -7,8 +7,12 @@ import Dropdown, { Option } from "./components/dropdown";
 import Portal from "./components/portal";
 import { SectionContainer } from "./styled";
 /* -------- Actions & Types-------- */
-import { setElementType } from "../actions";
-import { ElementType } from "../types";
+import {
+  getElementNode,
+  getParentElementNode,
+  setElementType,
+} from "../actions";
+import { CustomEditor, ElementType } from "../types";
 /* -------- Toolbar Sections -------- */
 import AlignmentSection from "./sections/alignment";
 import ListSection from "./sections/lists";
@@ -93,6 +97,21 @@ const Menu = styled.div`
   align-items: center;
 `;
 
+// Gets the active element and as long as it exists, we find the current Element
+const getCurrentOption = (
+  editor: CustomEditor,
+  options: Option[]
+): Option | null => {
+  let activeElement = getElementNode(editor);
+  if (activeElement?.type === "list-item") {
+    activeElement = getParentElementNode(editor);
+  }
+  if (activeElement !== null) {
+    return options.filter((option) => option.value === activeElement?.type)[0];
+  }
+  return null;
+};
+
 interface ToolbarProps {
   editType: "text" | "element" | "hidden";
 }
@@ -107,16 +126,21 @@ const Toolbar = (props: ToolbarProps) => {
     return <TextFormatSection />;
   }
 
+  const selectedOption: Option | null = getCurrentOption(
+    editor,
+    allElementOptions
+  );
+
   return (
     <>
       <SectionContainer>
         <Dropdown
+          selectedOption={selectedOption || undefined}
           options={elementOptions}
           allOptions={allElementOptions}
-          placeholder="Select new element.."
-          onChange={(newOption) => {
-            setElementType(editor, newOption.value as ElementType);
-          }}
+          onChange={(newOption) =>
+            setElementType(editor, newOption.value as ElementType)
+          }
         />
       </SectionContainer>
       <AlignmentSection />

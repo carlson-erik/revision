@@ -39,6 +39,7 @@ const ListSection = () => {
         active={activeElementParent?.type === "ordered-list"}
         onMouseDown={(event) => {
           event.preventDefault();
+          event.stopPropagation();
           setElementType(editor, "ordered-list");
         }}
       >
@@ -48,6 +49,7 @@ const ListSection = () => {
         active={activeElementParent?.type === "bulleted-list"}
         onMouseDown={(event) => {
           event.preventDefault();
+          event.stopPropagation();
           setElementType(editor, "bulleted-list");
         }}
       >
@@ -58,6 +60,7 @@ const ListSection = () => {
           <ActionButton
             onMouseDown={(event: any) => {
               event.preventDefault();
+              event.stopPropagation();
               if (canOutdent) {
                 outdentListItem(editor);
               }
@@ -68,6 +71,7 @@ const ListSection = () => {
           <ActionButton
             onMouseDown={(event) => {
               event.preventDefault();
+              event.stopPropagation();
               if (canIndent) {
                 indentListItem(editor);
               }

@@ -3,6 +3,7 @@ import { CustomEditor, CustomElement, LinkInlineElement } from "../types";
 
 import isUrl from "is-url";
 import { getElementPath, getElementNode } from "./element";
+import { ReactEditor } from "slate-react";
 
 const isInlineActive = (editor: CustomEditor) => {
   const [link] = Editor.nodes(editor, {
@@ -42,14 +43,18 @@ const getContainerParentPath = (editor: CustomEditor): Path | null => {
 };
 
 const updateLink = (editor: CustomEditor, url: string) => {
+  const selection = editor.selection;
   const elementPath = getElementPath(editor);
-  if (isLinkActive(editor) && elementPath) {
+  if (isLinkActive(editor) && elementPath && selection) {
     Transforms.setNodes(editor, { url }, { at: elementPath });
+    ReactEditor.focus(editor);
+    Transforms.select(editor, selection);
   }
 };
 
 const insertLink = (editor: CustomEditor, url: string, linkLabel?: string) => {
-  if (!isLinkActive(editor)) {
+  const selection = editor.selection;
+  if (!isLinkActive(editor) && selection) {
     const link: LinkInlineElement = {
       type: "link",
       url,
@@ -57,6 +62,8 @@ const insertLink = (editor: CustomEditor, url: string, linkLabel?: string) => {
         linkLabel && linkLabel !== "" ? [{ text: linkLabel }] : [{ text: url }],
     };
     Transforms.insertNodes(editor, link);
+    ReactEditor.focus(editor);
+    Transforms.select(editor, selection);
   }
 };
 

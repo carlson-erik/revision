@@ -30,6 +30,7 @@ const AlignmentSection = () => {
         active={hasLeftAlignment}
         onMouseDown={(event) => {
           event.preventDefault();
+          event.stopPropagation();
           if (!hasLeftAlignment) {
             setElementFormat(editor, "align", "left");
           }
@@ -41,6 +42,7 @@ const AlignmentSection = () => {
         active={hasCenterAlignment}
         onMouseDown={(event) => {
           event.preventDefault();
+          event.stopPropagation();
           if (!hasCenterAlignment) {
             setElementFormat(editor, "align", "center");
           }
@@ -52,6 +54,7 @@ const AlignmentSection = () => {
         active={hasRightAlignment}
         onMouseDown={(event) => {
           event.preventDefault();
+          event.stopPropagation();
           if (!hasRightAlignment) {
             setElementFormat(editor, "align", "right");
           }
@@ -63,6 +66,7 @@ const AlignmentSection = () => {
         active={hasJustifyAlignment}
         onMouseDown={(event) => {
           event.preventDefault();
+          event.stopPropagation();
           if (!hasJustifyAlignment) {
             setElementFormat(editor, "align", "justify");
           }

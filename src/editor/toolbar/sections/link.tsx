@@ -109,7 +109,9 @@ const LinkConfigOverlay = (props: LinkConfigOverlayProps) => {
     setLinkText(event.target.value || "");
   };
 
-  const onSubmit = () => {
+  const onSubmit = (event: any) => {
+    event.preventDefault();
+    event.stopPropagation();
     if (url !== "" && isUrl(url)) {
       if (editingMode === "edit") {
         updateLink(editor, url);
@@ -163,6 +165,7 @@ const LinkSection = () => {
         active={isLinkFocused}
         onMouseDown={(event) => {
           event.preventDefault();
+          event.stopPropagation();
           setIsOpen(!isOpen);
         }}
         reference={setActionButtonRef}
