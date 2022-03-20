@@ -15,12 +15,12 @@ import {
   outdentListItem,
   setElementType,
 } from "../../actions";
-import { SectionContainer } from "../styled";
 import {
   getContainer,
   getContainerParent,
   isInlineActive,
 } from "../../actions/inline";
+import { SectionContainer } from "../styled";
 
 const ListSection = () => {
   const editor = useSlate();
@@ -39,6 +39,7 @@ const ListSection = () => {
         active={activeElementParent?.type === "ordered-list"}
         onMouseDown={(event) => {
           event.preventDefault();
+          event.stopPropagation();
           setElementType(editor, "ordered-list");
         }}
       >
@@ -48,6 +49,7 @@ const ListSection = () => {
         active={activeElementParent?.type === "bulleted-list"}
         onMouseDown={(event) => {
           event.preventDefault();
+          event.stopPropagation();
           setElementType(editor, "bulleted-list");
         }}
       >
@@ -58,22 +60,24 @@ const ListSection = () => {
           <ActionButton
             onMouseDown={(event: any) => {
               event.preventDefault();
+              event.stopPropagation();
               if (canOutdent) {
                 outdentListItem(editor);
               }
             }}
           >
-            <Unindent color={canOutdent ? 'black' : '#b7b7b7'} />
+            <Unindent color={canOutdent ? "black" : "#b7b7b7"} />
           </ActionButton>
           <ActionButton
             onMouseDown={(event) => {
               event.preventDefault();
+              event.stopPropagation();
               if (canIndent) {
                 indentListItem(editor);
               }
             }}
           >
-            <Indent color={canIndent ? 'black' : '#b7b7b7'} />
+            <Indent color={canIndent ? "black" : "#b7b7b7"} />
           </ActionButton>
         </>
       ) : null}

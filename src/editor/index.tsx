@@ -14,7 +14,7 @@ import { withHistory } from "slate-history";
 import { CustomEditor } from "./types";
 /* -------- Editor Components -------- */
 import TextLeaf from "./leaves/text";
-import DefaultElement from "./elements/";
+import ParagraphElement from "./elements/";
 import HeaderElement from "./elements/header";
 import ListElement from "./elements/list";
 import ListItemElement from "./elements/list-item";
@@ -132,7 +132,7 @@ const renderElement = (props: RenderElementProps) => {
     case "header-six":
       return <HeaderElement {...props} />;
     default:
-      return <DefaultElement {...props} />;
+      return <ParagraphElement {...props} />;
   }
 };
 

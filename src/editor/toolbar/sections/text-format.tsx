@@ -1,67 +1,82 @@
-import { useSlate } from 'slate-react';
+import { useSlate } from "slate-react";
 /* -------- Components -------- */
-import ActionButton from '../components/action-button';
-import { SectionContainer } from '../styled';
+import ActionButton from "../components/action-button";
+import { SectionContainer } from "../styled";
 /* -------- Actions & Types -------- */
-import { getActiveTextColor, isTextFormatActive, toggleTextFormat } from '../../actions';
+import {
+  getActiveTextColor,
+  isTextFormatActive,
+  toggleTextFormat,
+} from "../../actions";
 /* -------- Icon Components -------- */
-import Bold from '../icons/bold';
-import Italic from '../icons/italic';
-import Strikethrough from '../icons/strikethrough';
-import Underline from '../icons/underline';
-import Color from '../icons/color';
+import Bold from "../icons/bold";
+import Italic from "../icons/italic";
+import Strikethrough from "../icons/strikethrough";
+import Underline from "../icons/underline";
+import Color from "../icons/color";
 
 const TextFormatSection = () => {
   const editor = useSlate();
   return (
     <SectionContainer noSeparator={true}>
       <ActionButton
-        active={isTextFormatActive(editor, 'bold')}
+        active={isTextFormatActive(editor, "bold")}
         onMouseDown={(event) => {
           event.preventDefault();
-          toggleTextFormat(editor, 'bold')
+          event.stopPropagation();
+          toggleTextFormat(editor, "bold");
         }}
       >
-        <Bold color='black' />
+        <Bold color="black" />
       </ActionButton>
       <ActionButton
-        active={isTextFormatActive(editor, 'italics')}
+        active={isTextFormatActive(editor, "italics")}
         onMouseDown={(event) => {
           event.preventDefault();
-          toggleTextFormat(editor, 'italics')
+          event.stopPropagation();
+          toggleTextFormat(editor, "italics");
         }}
       >
-        <Italic color='black' />
+        <Italic color="black" />
       </ActionButton>
       <ActionButton
-        active={isTextFormatActive(editor, 'underline')}
+        active={isTextFormatActive(editor, "underline")}
         onMouseDown={(event) => {
           event.preventDefault();
-          toggleTextFormat(editor, 'underline')
+          event.stopPropagation();
+          toggleTextFormat(editor, "underline");
         }}
       >
-        <Underline color='black' />
+        <Underline color="black" />
       </ActionButton>
       <ActionButton
-        active={isTextFormatActive(editor, 'strikethrough')}
+        active={isTextFormatActive(editor, "strikethrough")}
         onMouseDown={(event) => {
           event.preventDefault();
-          toggleTextFormat(editor, 'strikethrough')
+          event.stopPropagation();
+          toggleTextFormat(editor, "strikethrough");
         }}
       >
-        <Strikethrough color='black' />
+        <Strikethrough color="black" />
       </ActionButton>
       <ActionButton
-        active={isTextFormatActive(editor, 'textcolor')}
+        active={isTextFormatActive(editor, "textcolor")}
         onMouseDown={(event) => {
           event.preventDefault();
-          console.log('active color: ', getActiveTextColor(editor));
+          event.stopPropagation();
+          console.log("active color: ", getActiveTextColor(editor));
         }}
       >
-        <Color color={getActiveTextColor(editor) == 'PRIMARY' ? 'black' : getActiveTextColor(editor)} />
+        <Color
+          color={
+            getActiveTextColor(editor) == "PRIMARY"
+              ? "black"
+              : getActiveTextColor(editor)
+          }
+        />
       </ActionButton>
     </SectionContainer>
-  )
-}
+  );
+};
 
 export default TextFormatSection;

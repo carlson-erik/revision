@@ -7,7 +7,7 @@ const StyledParagraph = styled.p<{alignment?: string}>`
   padding: 0 0 0.5rem 0;
 `;
 
-const DefaultElement = (props:RenderElementProps) => {
+const ParagraphElement = (props:RenderElementProps) => {
   return (
     <StyledParagraph 
       {...props.attributes} 
@@ -18,4 +18,4 @@ const DefaultElement = (props:RenderElementProps) => {
   )
 };
 
-export default DefaultElement;
+export default ParagraphElement;
