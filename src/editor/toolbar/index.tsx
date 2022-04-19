@@ -24,7 +24,7 @@ import Heading from "./icons/heading";
 import List from "./icons/list";
 import Link from "./icons/link";
 
-const elementOptions: Option[] = [
+const textElements: Option[] = [
   {
     label: "Paragraph",
     value: "paragraph",
@@ -62,8 +62,8 @@ const elementOptions: Option[] = [
   },
 ];
 
-const allElementOptions: Option[] = [
-  ...elementOptions,
+const allElements: Option[] = [
+  ...textElements,
   {
     label: "Ordered List",
     value: "ordered-list",
@@ -126,18 +126,14 @@ const Toolbar = (props: ToolbarProps) => {
     return <TextFormatSection />;
   }
 
-  const selectedOption: Option | null = getCurrentOption(
-    editor,
-    allElementOptions
-  );
+  const selectedOption: Option | null = getCurrentOption(editor, allElements);
 
   return (
     <>
       <SectionContainer>
         <Dropdown
           selectedOption={selectedOption || undefined}
-          options={elementOptions}
-          allOptions={allElementOptions}
+          options={textElements}
           onChange={(newOption) =>
             setElementType(editor, newOption.value as ElementType)
           }

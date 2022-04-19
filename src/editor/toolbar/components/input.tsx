@@ -1,4 +1,5 @@
-import styled from 'styled-components';
+import { ChangeEvent } from "react";
+import styled from "styled-components";
 /* -------- Styled Components -------- */
 const InputContainer = styled.div`
   display: flex;
@@ -8,9 +9,9 @@ const InputContainer = styled.div`
 
 const ThemedInput = styled.input`
   border-radius: 4px;
-  border: 1px solid #E5E8EC;
-  color: #1E2127;
-  background-color: #FFFFFF;
+  border: 1px solid #e5e8ec;
+  color: #1e2127;
+  background-color: #ffffff;
   padding: 0.25rem;
   @media only screen and (max-width: 500px) {
     width: 100%;
@@ -19,20 +20,20 @@ const ThemedInput = styled.input`
     outline-color: #1e86ff;
   }
   &:disabled {
-    color: #7C818B;
-    background-color: #E5E8EC;
+    color: #7c818b;
+    background-color: #e5e8ec;
   }
 `;
 
 const ThemedLabel = styled.label`
-  color: #A9AEB7;
+  color: #a9aeb7;
   font-size: 12px;
   font-weight: 600;
   line-height: normal;
   padding-bottom: 4px;
 `;
 
-type InputTypes = 'button' | 'checkbox' | 'text' | 'password';
+type InputTypes = "text" | "password";
 
 interface InputProps {
   id: string;
@@ -45,22 +46,31 @@ interface InputProps {
 }
 
 export default function Input(props: InputProps) {
-  const { id, label, type, placeholder, value, disabled=false, onChange } = props;
+  const {
+    id,
+    label,
+    type,
+    placeholder,
+    value,
+    disabled = false,
+    onChange,
+  } = props;
   return (
     <InputContainer>
-      {label && label !== '' && (
-        <ThemedLabel htmlFor={id}>
+      {label && label !== "" && (
+        <ThemedLabel data-testid="input-label" htmlFor={id}>
           {label}
         </ThemedLabel>
       )}
-      <ThemedInput 
-        id={id} 
-        type={type} 
-        disabled={disabled} 
-        placeholder={placeholder} 
-        value={value} 
+      <ThemedInput
+        id={id}
+        type={type}
+        disabled={disabled}
+        placeholder={placeholder}
+        value={value}
         onChange={onChange}
+        data-testid="input"
       />
     </InputContainer>
   );
-};
+}
