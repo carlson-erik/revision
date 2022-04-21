@@ -72,7 +72,7 @@ const OptionListItem = styled.li<{ selected: boolean }>`
 
 export type Option = {
   label: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   value: string;
 };
 
@@ -86,17 +86,18 @@ interface OptionsListProps {
 const OptionsList = (props: OptionsListProps) => {
   const { options, selectedOption, onChange, onClose } = props;
   return (
-    <OLContainer>
+    <OLContainer data-testid="options-list">
       {options.map((option) => {
         return (
           <OptionListItem
             key={option.value}
+            data-testid="option"
             selected={
               selectedOption && selectedOption.value === option.value
                 ? true
                 : false
             }
-            onMouseDown={(event) => {
+            onClick={(event) => {
               onChange(option);
               onClose();
               event.stopPropagation();
@@ -114,7 +115,6 @@ const OptionsList = (props: OptionsListProps) => {
 interface DropdownProps {
   options: Option[];
   selectedOption?: Option;
-  allOptions: Option[];
   placeholder?: string;
   disabled?: boolean;
   onChange: (value: Option) => void;
@@ -144,6 +144,7 @@ const Dropdown = (props: DropdownProps) => {
         }}
         disabled={disabled}
         ref={setContainerRef}
+        data-testid={disabled ? "dropdown-disabled" : "dropdown"}
       >
         <SelectedValue disabled={disabled}>
           {selectedOption && !disabled ? (
@@ -152,7 +153,7 @@ const Dropdown = (props: DropdownProps) => {
               {selectedOption.label}
             </>
           ) : (
-            { placeholderText }
+            <>{placeholderText}</>
           )}
         </SelectedValue>
         <IconContainer disabled={disabled}>
